@@ -1,0 +1,94 @@
+# =============================================================
+# dashboard.py — Optional Flask Web Dashboard
+# Run: python dashboard.py
+# Open: http://localhost:5000
+# =============================================================
+
+from flask import Flask, render_template_string, jsonify
+import random
+from monitor   import simulate_normal, simulate_anomaly
+from detector  import train_model, predict
+from explainer import explain
+from healer    import decide_and_heal
+
+app = Flask(__name__)
+
+# Train once on startup
+print("[dashboard] Training model...")
+model = train_model(n_samples=200)
+print("[dashboard] Model ready.")
+
+HTML = """
+<!DOCTYPE html>
+<html>
+<head>
+  <title>XAI Self-Healing Cloud Dashboard</title>
+  <meta http-equiv="refresh" content="5">
+  <style>
+    body { font-family: monospace; background: #0f0f1a; color: #e0e0e0; padding: 2rem; }
+    h1   { color: #7DF9AA; }
+    .card { background: #1a1a2e; border: 1px solid #333; border-radius: 8px;
+            padding: 1rem; margin-bottom: 1rem; }
+    .ANOMALY { color: #FF6B6B; font-weight: bold; }
+    .NORMAL  { color: #7DF9AA; font-weight: bold; }
+    pre { white-space: pre-wrap; word-break: break-word; }
+    .metric { display:inline-block; background:#16213e; padding:6px 12px;
+              border-radius:4px; margin:4px; min-width: 160px; }
+  </style>
+</head>
+<body>
+  <h1>⚡ XAI Self-Healing Cloud Monitor</h1>
+  <p style="color:#888">Auto-refreshes every 5 seconds</p>
+
+  <div class="card">
+    <h2>Current Status: <span class="{{ label }}">{{ label }}</span></h2>
+    <h3>System Metrics</h3>
+    {% for k, v in metrics.items() %}
+      <span class="metric">{{ k }}: <b>{{ "%.1f"|format(v) }}</b></span>
+    {% endfor %}
+  </div>
+
+  <div class="card">
+    <h3>🔍 XAI Explanation</h3>
+    <pre>{{ explanation }}</pre>
+  </div>
+
+  <div class="card">
+    <h3>🛠 Recovery Actions</h3>
+    <pre>{{ actions }}</pre>
+  </div>
+</body>
+</html>
+"""
+
+@app.route("/")
+def index():
+    # Randomly inject anomaly 30% of the time for demo
+    if random.random() < 0.3:
+        anomaly_type = random.choice(["cpu_spike", "memory_leak", "disk_full"])
+        metrics = simulate_anomaly(anomaly_type)
+    else:
+        metrics = simulate_normal()
+
+    label, score, _ = predict(model, metrics)
+    xai_report = explain(metrics, label, score)
+
+    # Capture healing actions as text
+    import io, sys
+    old_stdout = sys.stdout
+    sys.stdout = buffer = io.StringIO()
+    decide_and_heal(metrics, label, xai_report)
+    sys.stdout = old_stdout
+    actions = buffer.getvalue()
+
+    return render_template_string(
+        HTML,
+        metrics=metrics,
+        label=label,
+        explanation=xai_report,
+        actions=actions,
+    )
+
+
+if __name__ == "__main__":
+    app.run(debug=True, port=5000)
