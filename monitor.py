@@ -1,92 +1,104 @@
 # =============================================================
-# monitor.py — System Monitoring Module
-# Collects CPU, Memory, Disk, Network metrics using psutil
+# monitor.py — System Monitoring and Scenario Simulation
 # =============================================================
 
-import psutil
-import time
 import random
+import shutil
+import time
 
-def get_system_metrics():
-    """
-    Collect real-time system metrics.
-    Returns a dictionary of current resource usage.
-    """
-    metrics = {
-        "cpu_percent":    psutil.cpu_percent(interval=1),
-        "memory_percent": psutil.virtual_memory().percent,
-        "disk_percent":   psutil.disk_usage("/").percent,
-        "net_bytes_sent": psutil.net_io_counters().bytes_sent / 1e6,   # MB
-        "net_bytes_recv": psutil.net_io_counters().bytes_recv / 1e6,   # MB
-    }
-    return metrics
+import psutil
+
+METRIC_KEYS = (
+    "cpu_percent",
+    "memory_percent",
+    "disk_percent",
+    "net_bytes_sent",
+    "net_bytes_recv",
+)
 
 
-def simulate_normal():
+def get_system_metrics(disk_path=None):
     """
-    Simulate a NORMAL system state.
-    Returns metrics with low/moderate resource usage.
+    Collect a snapshot of real host metrics.
+
+    Network values are cumulative MB since the network counters were reset,
+    not throughput rates. disk_path defaults to the current working drive.
     """
+    if disk_path is None:
+        disk_path = shutil.disk_usage(".")  # validates local filesystem access
+        disk_percent = psutil.disk_usage(".").percent
+    else:
+        disk_percent = psutil.disk_usage(disk_path).percent
+
+    counters = psutil.net_io_counters()
     return {
-        "cpu_percent":    random.uniform(10, 40),
-        "memory_percent": random.uniform(30, 55),
-        "disk_percent":   random.uniform(20, 50),
-        "net_bytes_sent": random.uniform(1, 10),
-        "net_bytes_recv": random.uniform(1, 10),
+        "cpu_percent": float(psutil.cpu_percent(interval=1)),
+        "memory_percent": float(psutil.virtual_memory().percent),
+        "disk_percent": float(disk_percent),
+        "net_bytes_sent": float(counters.bytes_sent / 1_000_000),
+        "net_bytes_recv": float(counters.bytes_recv / 1_000_000),
     }
 
 
-def simulate_anomaly(anomaly_type="cpu_spike"):
-    """
-    Simulate a FAILURE / ANOMALY state.
-    
-    anomaly_type options:
-      - "cpu_spike"    : Very high CPU usage
-      - "memory_leak"  : Memory nearly full
-      - "disk_full"    : Disk almost full
-      - "combined"     : Multiple metrics spiked
-    """
-    base = simulate_normal()
+def simulate_normal(rng=None):
+    """Return one synthetic healthy-state metric snapshot."""
+    rng = rng or random
+    return {
+        "cpu_percent": rng.uniform(10, 40),
+        "memory_percent": rng.uniform(30, 55),
+        "disk_percent": rng.uniform(20, 50),
+        "net_bytes_sent": rng.uniform(1, 10),
+        "net_bytes_recv": rng.uniform(1, 10),
+    }
 
+
+def simulate_anomaly(anomaly_type="cpu_spike", rng=None):
+    """Return synthetic metrics for a supported failure scenario."""
+    rng = rng or random
+    if anomaly_type not in {"cpu_spike", "memory_leak", "disk_full", "combined", "network_issue"}:
+        raise ValueError(
+            "Unsupported scenario. Choose cpu_spike, memory_leak, disk_full, "
+            "network_issue, or combined."
+        )
+
+    base = simulate_normal(rng)
     if anomaly_type == "cpu_spike":
-        base["cpu_percent"] = random.uniform(88, 99)
+        base["cpu_percent"] = rng.uniform(88, 99)
     elif anomaly_type == "memory_leak":
-        base["memory_percent"] = random.uniform(88, 98)
+        base["memory_percent"] = rng.uniform(88, 98)
     elif anomaly_type == "disk_full":
-        base["disk_percent"] = random.uniform(90, 99)
+        base["disk_percent"] = rng.uniform(90, 99)
+    elif anomaly_type == "network_issue":
+        base["net_bytes_sent"] = rng.uniform(45, 80)
+        base["net_bytes_recv"] = rng.uniform(45, 80)
     elif anomaly_type == "combined":
-        base["cpu_percent"]    = random.uniform(85, 99)
-        base["memory_percent"] = random.uniform(82, 95)
-        base["disk_percent"]   = random.uniform(80, 95)
-
+        base["cpu_percent"] = rng.uniform(88, 99)
+        base["memory_percent"] = rng.uniform(88, 98)
+        base["disk_percent"] = rng.uniform(90, 99)
+        base["net_bytes_sent"] = rng.uniform(45, 80)
+        base["net_bytes_recv"] = rng.uniform(45, 80)
     return base
 
 
-def collect_samples(n=50, inject_anomalies=True):
-    """
-    Collect n metric samples (simulated).
-    Injects a few anomalies for training/demo purposes.
-    Returns a list of metric dicts.
-    """
+def collect_samples(n=50, inject_anomalies=True, seed=None):
+    """Generate reproducible synthetic samples for development and tests."""
+    if not isinstance(n, int) or n < 1:
+        raise ValueError("n must be a positive integer.")
+    rng = random.Random(seed)
     samples = []
+    scenario_types = ("cpu_spike", "memory_leak", "disk_full", "combined", "network_issue")
     for i in range(n):
-        if inject_anomalies and i % 10 == 0:          # ~10% anomalies
-            anomaly_type = random.choice(
-                ["cpu_spike", "memory_leak", "disk_full", "combined"]
-            )
-            samples.append(simulate_anomaly(anomaly_type))
+        if inject_anomalies and i % 10 == 0:
+            samples.append(simulate_anomaly(rng.choice(scenario_types), rng=rng))
         else:
-            samples.append(simulate_normal())
+            samples.append(simulate_normal(rng=rng))
     return samples
 
 
-# ── Quick test ───────────────────────────────────────────────
 if __name__ == "__main__":
-    print("=== Normal sample ===")
+    print("=== Synthetic normal sample ===")
     print(simulate_normal())
-
-    print("\n=== Anomaly sample (CPU spike) ===")
+    print("\n=== Synthetic CPU-spike sample ===")
     print(simulate_anomaly("cpu_spike"))
-
-    print("\n=== Anomaly sample (combined) ===")
-    print(simulate_anomaly("combined"))
+    print("\n=== Real host metrics ===")
+    print(get_system_metrics())
