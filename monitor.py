@@ -3,7 +3,6 @@
 # =============================================================
 
 import random
-import shutil
 import time
 
 import psutil
@@ -24,11 +23,7 @@ def get_system_metrics(disk_path=None):
     Network values are cumulative MB since the network counters were reset,
     not throughput rates. disk_path defaults to the current working drive.
     """
-    if disk_path is None:
-        disk_path = shutil.disk_usage(".")  # validates local filesystem access
-        disk_percent = psutil.disk_usage(".").percent
-    else:
-        disk_percent = psutil.disk_usage(disk_path).percent
+    disk_percent = psutil.disk_usage(disk_path or ".").percent
 
     counters = psutil.net_io_counters()
     return {
