@@ -1,5 +1,7 @@
 # Project Report
 
+> **Implementation-status correction (2026-10):** This report contains draft/template text and historical claims that have not been independently reproduced from this repository. Do not treat statements about root-cause identification, automated recovery, or model performance as verified results. The current code is a local prototype trained on synthetic data; its explanation rankings are fixed-baseline heuristics, and recovery steps are simulated recommendations only. Replace any performance numbers with results from a documented held-out evaluation before submission.
+
 ## Explainable AI-Based Self-Healing Cloud Application
 
 **Student Name:** [Your Name]  
