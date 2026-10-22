@@ -204,33 +204,14 @@ function renderMetricCards(m,anomaly){
     </div>`;
   }).join('');
 }
-function renderXAI(m,anomaly,score){
-  const cpuT=parseInt(document.getElementById('cpu-thresh').value);
-  const memT=parseInt(document.getElementById('mem-thresh').value);
-  const devs=FEATURES.map(f=>({f,z:parseFloat(zScore(f,m[f])),abs:Math.abs(parseFloat(zScore(f,m[f])))})).sort((a,b)=>b.abs-a.abs);
-  const rules=[];
-  if(m.cpu_percent>cpuT) rules.push(`<span style="color:#f97316">CPU at ${m.cpu_percent.toFixed(1)}% exceeds ${cpuT}% threshold — possible runaway process</span>`);
-  if(m.memory_percent>memT) rules.push(`<span style="color:#3b82f6">Memory at ${m.memory_percent.toFixed(1)}% exceeds ${memT}% — possible memory leak</span>`);
-  if(m.disk_percent>85) rules.push(`<span style="color:#eab308">Disk at ${m.disk_percent.toFixed(1)}% critically low on storage</span>`);
-  if(m.net_bytes_sent>40) rules.push(`<span style="color:#8b5cf6">Network sent ${m.net_bytes_sent.toFixed(1)} MB — abnormally high traffic</span>`);
-  if(m.latency_ms>150) rules.push(`<span style="color:#ec4899">Latency ${m.latency_ms.toFixed(0)}ms — network degradation detected</span>`);
-  if(!rules.length) rules.push(`<span style="color:#22c55e">All metrics within acceptable thresholds</span>`);
-  let html=`<div style="margin-bottom:10px"><span style="color:#6b7590">Detection: </span><span style="font-weight:600;color:${anomaly?'#ef4444':'#22c55e'}">${anomaly?'ANOMALY':'NORMAL'}</span><span style="color:#6b7590;margin-left:12px">Score: </span><span style="color:#fb923c;font-weight:600">${score}</span></div>`;
-  html+=`<div style="font-size:11px;color:#f97316;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:6px">Feature importance</div>`;
-  devs.slice(0,3).forEach((d,i)=>{
-    const w=Math.min(d.abs*12,80),col=d.abs>3?'#ef4444':d.abs>1.5?'#f97316':'#6b7590';
-    html+=`<div style="display:flex;align-items:center;gap:8px;margin-bottom:5px">
-      <span style="font-size:11px;color:#6b7590;min-width:12px">#${i+1}</span>
-      <span style="font-size:12px;color:#9aa3b8;min-width:100px">${LABELS[d.f]}</span>
-      <div style="flex:1;height:4px;background:#2a3550;border-radius:2px"><div style="height:4px;border-radius:2px;background:${col};width:${w}%"></div></div>
-      <span style="font-size:11px;color:${col};min-width:36px;text-align:right">z=${d.z>0?'+':''}${d.z}</span>
-    </div>`;
-  });
-  html+=`<div style="font-size:11px;color:#f97316;letter-spacing:0.06em;text-transform:uppercase;margin:10px 0 6px">Rule-based reasoning</div>`;
-  rules.forEach(r=>{html+=`<div style="margin-bottom:3px;padding-left:8px;border-left:2px solid #2a3550">${r}</div>`;});
-  document.getElementById('xai-panel').innerHTML=html;
-}
-function renderActions(m,anomaly,serverActions=[]){
+function renderXAI(m,anomaly,score,serverReport=''){
+  const panel=document.getElementById('xai-panel');
+  panel.textContent=serverReport || 'Server explanation unavailable.';
+  panel.style.whiteSpace='pre-wrap';
+  panel.style.fontFamily="'Cascadia Code','Consolas',monospace";
+  panel.style.fontSize='11px';
+  panel.style.lineHeight='1.6';
+}function renderActions(m,anomaly,serverActions=[]){
   if(!anomaly || !serverActions.length){
     document.getElementById('actions-panel').innerHTML=`<div style="display:flex;align-items:center;gap:8px;color:#22c55e">No recovery recommendation returned by the server</div>`;
     return;
@@ -279,7 +260,7 @@ async function runScenario(s, resetTimer=true){
     const anomaly=data.label==='ANOMALY';
     const score=Number(data.score).toFixed(4);
     renderMetricCards(m,anomaly);
-    renderXAI(m,anomaly,score);
+    renderXAI(m,anomaly,score,data.explanation);
     renderActions(m,anomaly,data.actions);
     renderBanner(anomaly,score);
     addLog(`Server ML scan: ${s.toUpperCase()} — ${data.label}; recovery recommendations are simulation-only`);
