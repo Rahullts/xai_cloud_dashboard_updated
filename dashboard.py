@@ -230,31 +230,28 @@ function renderXAI(m,anomaly,score){
   rules.forEach(r=>{html+=`<div style="margin-bottom:3px;padding-left:8px;border-left:2px solid #2a3550">${r}</div>`;});
   document.getElementById('xai-panel').innerHTML=html;
 }
-function renderActions(m,anomaly){
-  const autoHeal=document.getElementById('auto-heal').checked;
-  const appName=document.getElementById('app-name').value||'web-app-server';
-  const cpuT=parseInt(document.getElementById('cpu-thresh').value);
-  const memT=parseInt(document.getElementById('mem-thresh').value);
-  if(!anomaly){
-    document.getElementById('actions-panel').innerHTML=`<div style="display:flex;align-items:center;gap:8px;color:#22c55e"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>No healing action required</div>`;
+function renderActions(m,anomaly,serverActions=[]){
+  if(!anomaly || !serverActions.length){
+    document.getElementById('actions-panel').innerHTML=`<div style="display:flex;align-items:center;gap:8px;color:#22c55e">No recovery recommendation returned by the server</div>`;
     return;
   }
-  const acts=[];
-  if(m.cpu_percent>cpuT){acts.push({icon:'↺',color:'#f97316',text:`Restart service: ${appName}`,status:'proposed'});acts.push({icon:'⊕',color:'#fb923c',text:'Scale out +1 instance',status:'executed'});}
-  if(m.memory_percent>memT){acts.push({icon:'✕',color:'#3b82f6',text:'Kill runaway process',status:'executed'});acts.push({icon:'↺',color:'#3b82f6',text:'Restart memory worker',status:'executed'});}
-  if(m.disk_percent>85) acts.push({icon:'⊟',color:'#eab308',text:'Clear cache (512 MB freed)',status:'executed'});
-  if(m.net_bytes_sent>40||m.latency_ms>150) acts.push({icon:'◉',color:'#8b5cf6',text:'Alert: ops team notified',status:'alerted'});
-  if(!acts.length) acts.push({icon:'◉',color:'#f97316',text:'Alert: manual review needed',status:'alerted'});
-  let html='';
-  acts.forEach(a=>{
-    const sc=a.status==='executed'?'#22c55e':'#f97316',sb=a.status==='executed'?'#162a1a':'#2a1800';
-    html+=`<div class="action-row"><span style="color:${a.color};font-size:14px;min-width:16px;text-align:center">${a.icon}</span><span style="flex:1;color:#c8d0e0;font-size:12px">${a.text}</span><span style="font-size:10px;padding:2px 8px;border-radius:4px;background:${sb};color:${sc};font-weight:600">${autoHeal?a.status:'skipped'}</span></div>`;
-  });
+  const labels={
+    restart_service:'Recommend restart service',
+    scale_out:'Recommend scale-out',
+    inspect_memory_pressure:'Inspect memory pressure',
+    restart_worker:'Recommend worker restart',
+    review_disk_cleanup:'Review disk cleanup',
+    notify_operator:'Recommend operator notification',
+    manual_review:'Manual review recommended'
+  };
+  const colors=['#f97316','#fb923c','#3b82f6','#eab308','#8b5cf6'];
+  const html=serverActions.map((action,index)=>{
+    const label=labels[action.action]||action.action;
+    const color=colors[index%colors.length];
+    return `<div class="action-row"><span style="color:${color};font-size:14px;min-width:16px;text-align:center">•</span><span style="flex:1;color:#c8d0e0;font-size:12px">${label}<div style="font-size:10px;color:#6b7590">${action.reason}</div></span><span style="font-size:10px;padding:2px 8px;border-radius:4px;background:#2a1800;color:#fb923c;font-weight:600">PROPOSED</span></div>`;
+  }).join('');
   document.getElementById('actions-panel').innerHTML=html;
-  if(autoHeal){healCount++;addLog(`RECOVERY [#${healCount}] — Actions executed for ${acts.length} condition(s) on ${appName}`);}
-  else addLog('AUTO-HEAL disabled — anomaly logged, no action taken');
-}
-function renderBanner(anomaly,score){
+}function renderBanner(anomaly,score){
   const env=document.getElementById('env-select').value;
   const b=document.getElementById('status-banner'),bi=document.getElementById('banner-icon'),bt=document.getElementById('banner-text'),bs=document.getElementById('banner-sub');
   document.getElementById('banner-score-val').textContent=score;
@@ -283,7 +280,7 @@ async function runScenario(s, resetTimer=true){
     const score=Number(data.score).toFixed(4);
     renderMetricCards(m,anomaly);
     renderXAI(m,anomaly,score);
-    renderActions(m,anomaly);
+    renderActions(m,anomaly,data.actions);
     renderBanner(anomaly,score);
     addLog(`Server ML scan: ${s.toUpperCase()} — ${data.label}; recovery recommendations are simulation-only`);
   } catch(error) {
