@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 400" font-family="Arial, sans-serif">
   <rect width="860" height="400" fill="#0e1118"/>
-  <text x="430" y="30" text-anchor="middle" fill="#dce1ee" font-size="14" font-weight="bold">Figure 4 — Temporal Model Comparison (5-Seed Mean F1 and ROC-AUC)</text>
+  <text x="430" y="30" text-anchor="middle" fill="#dce1ee" font-size="14" font-weight="bold">Figure 2 — Temporal Model Comparison (5-Seed Mean F1 and ROC-AUC)</text>
 
   <!-- F1 BAR CHART -->
   <!-- Axes -->

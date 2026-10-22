@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 360" font-family="Arial, sans-serif">
   <rect width="860" height="360" fill="#0e1118"/>
-  <text x="430" y="28" text-anchor="middle" fill="#dce1ee" font-size="14" font-weight="bold">Figure 7 — Recovery Verification: Before / Healing / After</text>
+  <text x="430" y="28" text-anchor="middle" fill="#dce1ee" font-size="14" font-weight="bold">Figure 4 — Recovery Verification: Before / Healing / After</text>
   <text x="430" y="46" text-anchor="middle" fill="#7e8aa0" font-size="11">Scenario: Network Degradation  |  Post-healing telemetry: simulated normal_stable  |  Model: Logistic Regression</text>
 
   <!-- BEFORE block -->

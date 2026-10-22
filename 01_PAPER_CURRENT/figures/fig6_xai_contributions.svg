@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 380" font-family="Arial, sans-serif">
   <rect width="860" height="380" fill="#0e1118"/>
-  <text x="430" y="28" text-anchor="middle" fill="#dce1ee" font-size="14" font-weight="bold">Figure 6 — XAI Coefficient Contributions (Case A: disk_gradual_exhaustion)</text>
+  <text x="430" y="28" text-anchor="middle" fill="#dce1ee" font-size="14" font-weight="bold">Figure 3 — XAI Feature Contributions (Case A: Gradual Disk Exhaustion)</text>
   <text x="430" y="46" text-anchor="middle" fill="#7e8aa0" font-size="11">Contribution = scaled_feature_value × LR_coefficient  |  Risk Score: 0.591  |  Category: Combined Failure</text>
 
   <!-- X axis -->

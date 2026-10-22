@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 520" font-family="Arial, sans-serif">
   <rect width="900" height="520" fill="#0e1118"/>
-  <text x="450" y="32" text-anchor="middle" fill="#dce1ee" font-size="15" font-weight="bold">Figure 1 — System Architecture: Eight-Stage Integrated Pipeline</text>
+  <text x="450" y="32" text-anchor="middle" fill="#dce1ee" font-size="15" font-weight="bold">Figure 1 — System Architecture: Ten-Stage Integrated Pipeline</text>
 
   <!-- Stage boxes -->
   <!-- Stage 1: Telemetry -->
