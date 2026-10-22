@@ -61,7 +61,7 @@ def run_demo():
         decide_and_heal(metrics, label, xai_report)
 
     print("\n\n" + "★"*55)
-    print("  Demo complete! Check 'recovery_log.txt' for all actions.")
+    print("  Demo complete! Simulated recovery recommendations are recorded in recovery_log.jsonl.")
     print("★"*55)
 
 
