@@ -1,128 +1,99 @@
-# ⚡ Explainable AI-Based Self-Healing Cloud Application
+# Explainable-AI-Powered Self-Healing Cloud Applications
 
-> Autonomous cloud health monitoring with AI anomaly detection and human-readable explanations.
+A research and demonstration project that combines synthetic cloud/system metrics, Isolation Forest problem detection, heuristic explanations, and simulated recovery recommendations.
 
----
+> **Important scope note:** The current version is a local academic prototype. It does not connect to AWS/Azure/GCP, restart real services, kill processes, scale infrastructure, or clean real disks. Recovery actions are recommendations logged as simulation-only.
 
-## 🔍 What This Project Does
+## Pipeline
 
-This system monitors cloud application health metrics, detects failures using machine learning, **explains WHY a failure was detected**, and automatically triggers recovery actions — all without human intervention.
-
-```
-Monitor Metrics → AI Detection → XAI Explanation → Self-Healing Actions
-     CPU/RAM          Isolation          Z-score +           Restart /
-     Disk/Net         Forest             Rule Engine         Scale / Alert
-```
-
----
-
-## 🧠 Key Concepts
-
-| Concept | What it means here |
-|---|---|
-| **Self-Healing** | System detects its own failures and recovers automatically |
-| **Explainable AI** | Every AI decision comes with a human-readable reason |
-| **Isolation Forest** | Unsupervised ML algorithm to detect metric outliers |
-| **Feature Importance** | Ranks which metric caused the anomaly |
-
----
-
-## 📁 Project Structure
-
-```
-xai_self_healing/
-├── monitor.py        # Collect CPU, memory, disk, network metrics
-├── detector.py       # Isolation Forest anomaly detection
-├── explainer.py      # XAI: z-scores + rule-based explanations
-├── healer.py         # Decision engine + self-healing actions
-├── main.py           # Run all 5 demo scenarios
-├── dashboard.py      # Optional Flask web dashboard
-├── requirements.txt  # Python dependencies
-└── recovery_log.txt  # Auto-generated action log
+```text
+Metrics / synthetic scenarios
+          ↓
+Input validation and feature vector
+          ↓
+Isolation Forest (five metrics)
+          ↓
+Heuristic explanation + threshold rules
+          ↓
+Simulated recovery recommendations
 ```
 
----
+## Current capabilities
 
-## 🚀 Quick Start
+- Collect CPU, memory, disk, and cumulative network-counter metrics with `psutil`.
+- Generate reproducible synthetic normal, CPU-spike, memory-leak, disk-full, network-issue, and combined scenarios.
+- Detect outliers using scikit-learn Isolation Forest.
+- Show fixed-baseline deviation rankings and human-readable threshold rules.
+- Serve a Flask dashboard whose selected scenario is passed to the server-side model endpoint.
+- Return recovery recommendations explicitly marked as simulation-only.
+- Test input validation, repeatability, explanation labeling, recovery planning, and Flask API behavior.
+
+## Technology
+
+- Python
+- NumPy
+- scikit-learn (Isolation Forest)
+- psutil
+- Flask
+- unittest (standard library)
+
+## Setup
+
+Use Python 3.10+ where possible.
 
 ```bash
-# 1. Clone the repo
-git clone https://github.com/yourusername/xai-self-healing-cloud.git
-cd xai-self-healing-cloud
+python -m venv .venv
+# Windows PowerShell:
+.venv\Scripts\Activate.ps1
+# macOS/Linux:
+source .venv/bin/activate
 
-# 2. Install dependencies
-pip install -r requirements.txt
+python -m pip install -r requirements.txt
+```
 
-# 3. Run the demo
+Run the command-line demonstration:
+
+```bash
 python main.py
+```
 
-# 4. (Optional) Run the web dashboard
+Run the dashboard:
+
+```bash
 python dashboard.py
-# Open http://localhost:5000
 ```
 
----
+Open http://127.0.0.1:5000. The dashboard calls `/api/scan?scenario=normal` and supports `normal`, `cpu`, `memory`, `disk`, `network`, and `combined`.
 
-## 📊 Sample Output
+## Tests
 
-```
-SCENARIO 2: CPU Spike
-──────────────────────────────────────
-AI Decision: ANOMALY  (score=-0.1243)
+Run from the repository root:
 
-XAI EXPLANATION REPORT
-  CPU Usage (%)        93.7   (z=+6.9)  <<<
-  Memory Usage (%)     44.2   (z=+0.2)
-  Disk Usage (%)       33.1   (z=-0.2)
-
-Feature Importance:
-  #1 CPU Usage (%)     z=+6.9  ████████████████
-
-Rule-Based Reasoning:
-  ⚠ CPU at 93.7% — well above safe limit of 85%.
-    Likely cause: runaway process or traffic surge.
-
-DECISION ENGINE:
-  🔄 Restarting service 'web-app-server'... ✅
-  📈 Scaling out — adding 1 instance...    ✅
-  📋 LOG: RESTART + SCALE_OUT recorded.
+```bash
+python -m unittest discover -s tests -v
 ```
 
----
+The test suite includes synthetic data reproducibility, scenario validation, feature ordering, invalid model inputs, seeded model reproducibility, heuristic explanation labeling, recovery recommendations, and Flask endpoint validation.
 
-## 🛠 Tech Stack
+## Interpretation and research limitations
 
-- **Python 3.9+**
-- **psutil** — system metrics collection
-- **scikit-learn** — Isolation Forest ML model
-- **numpy** — numerical computations
-- **Flask** — optional web dashboard
+- The Isolation Forest is trained on generated synthetic samples. This is not evidence of real-world cloud reliability or generalization.
+- Its `decision_function` score is higher for more normal observations and lower for more anomalous observations.
+- Explanation rankings are based on fixed baseline deviations and hand-written thresholds. They are **not** SHAP/LIME values, causal explanations, or true Isolation Forest feature attributions.
+- Network fields are cumulative MB counters since the host network counters were reset, not network throughput rates.
+- Dashboard latency is a separate synthetic display field and is not included in the model's five input features.
+- Do not report accuracy, precision, recall, F1, ROC-AUC, or PR-AUC without a separately generated held-out evaluation set and reproducible calculation code.
 
----
+## Suggested next research milestones
 
-## 🔮 Future Improvements
+1. Add a labeled, seeded train/validation/test generator and evaluate the model against a threshold baseline.
+2. Report confusion matrix, precision, recall, F1, ROC-AUC, and PR-AUC where statistically appropriate.
+3. Add temporal traces and evaluate early-warning lead time only when labels and event times are defined.
+4. Add before/after recovery verification in simulation.
+5. Consider provider integrations only after safe, permissioned action execution and rollback behavior are designed.
 
-- [ ] SHAP values for rigorous feature attribution
-- [ ] Real AWS CloudWatch / GCP Stackdriver integration
-- [ ] LSTM-based predictive anomaly detection
-- [ ] Reinforcement learning for adaptive healing
-- [ ] Kubernetes operator for production deployment
+## References
 
----
-
-## 📖 Related Concepts
-
-- [Isolation Forest Paper (Liu et al., 2008)](https://cs.nju.edu.cn/zhouzh/zhouzh.files/publication/icdm08b.pdf)
-- [SHAP Explainability](https://github.com/slundberg/shap)
-- [psutil Documentation](https://psutil.readthedocs.io)
-- [Scikit-learn Isolation Forest](https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.IsolationForest.html)
-
----
-
-## 👨‍💻 Author
-
-**[Your Name]** — [Your College], [Department], [Year]
-
----
-
-*Built as an academic mini-project demonstrating Explainable AI in cloud systems.*
+- Liu, F. T., Ting, K. M., and Zhou, Z.-H. “Isolation Forest.” IEEE International Conference on Data Mining, 2008.
+- [scikit-learn IsolationForest documentation](https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.IsolationForest.html)
+- [psutil documentation](https://psutil.readthedocs.io/)
