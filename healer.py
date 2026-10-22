@@ -1,30 +1,33 @@
 # =============================================================
-# healer.py — Recovery Decision Engine (simulation only)
+# healer.py — Phase 3E / 4A Simulated Healer & Recovery Engine
+# Safely simulates recovery mapped from Root-Cause & Decision Engine
 # =============================================================
 
-from datetime import datetime, timezone
-from pathlib import Path
+import datetime
 import json
+import os
+from pathlib import Path
 
-LOG_FILE = Path(__file__).with_name("recovery_log.jsonl")
+LOG_FILE = Path(__file__).with_name("recovery_log.txt")
 
 
-def log_action(message: str, log_file=LOG_FILE):
-    """Append a timestamped JSON record to the recovery audit log."""
-    record = {
-        "timestamp_utc": datetime.now(timezone.utc).isoformat(),
-        "simulation": True,
-        "message": message,
-    }
-    with Path(log_file).open("a", encoding="utf-8") as stream:
-        stream.write(json.dumps(record, ensure_ascii=False) + "\n")
-    return record
+def log_action(message: str) -> bool:
+    """Safely append a timestamped message to the recovery log."""
+    timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    entry = f"[{timestamp}] {message}"
+    print(f"  [LOG] {entry}")
+    try:
+        with open(LOG_FILE, "a", encoding="utf-8") as f:
+            f.write(entry + "\n")
+        return True
+    except OSError:
+        print("  [WARNING] LOG WRITE FAILED -- entry was NOT saved to disk.")
+        return False
 
 
 def select_recovery_actions(metrics: dict, label: str, thresholds=None) -> list:
     """
     Select proposed recovery actions without executing them.
-
     These are recommendations for a demo only. This project does not connect
     to a cloud provider or restart/kill/scale/clean any real resource.
     """
@@ -71,12 +74,37 @@ def select_recovery_actions(metrics: dict, label: str, thresholds=None) -> list:
     return actions
 
 
-def decide_and_heal(metrics: dict, label: str, explanation: str = "") -> list:
+def decide_and_heal(action_or_metrics, label: str = None, explanation: str = ""):
     """
-    Backward-compatible orchestration entry point. Records proposed actions
-    as simulated recommendations; it never claims that real recovery occurred.
+    Executes the recommended recovery action safely in simulation.
+    Supports both Phase 3E/4A string action commands and backward-compatible metric dicts.
     """
-    actions = select_recovery_actions(metrics, label)
+    if isinstance(action_or_metrics, str):
+        recommended_action = action_or_metrics
+        print("\n" + "=" * 55)
+        print("  HEALING SIMULATION -- Executing Action")
+        print("=" * 55)
+        print(f"  [ACTION] {recommended_action}")
+
+        if "Scale CPU" in recommended_action:
+            log_action("SCALE_OUT: Simulated adding compute instances.")
+        elif "Restart affected service" in recommended_action:
+            log_action("RESTART: Simulated service restart to clear memory/state.")
+        elif "Clean temporary data" in recommended_action:
+            log_action("DISK_CLEAN: Simulated freeing disk space.")
+        elif "Check/restart network service" in recommended_action:
+            log_action("NETWORK_RESET: Simulated network service reboot.")
+        elif "Controlled recovery sequence" in recommended_action:
+            log_action("COMBINED_RECOVERY: Simulated rolling restart and scale out.")
+        else:
+            log_action(f"ALERT_ONLY: Alerted operator for {recommended_action}. No autonomous destructive action taken.")
+
+        print("  [DONE] Recovery simulation complete.")
+        return "Executed"
+
+    # Backward-compatible dict input
+    metrics = action_or_metrics
+    actions = select_recovery_actions(metrics, label or "ANOMALY")
     if not actions:
         message = "NORMAL: no recovery action proposed."
         print(message)
@@ -95,12 +123,4 @@ def decide_and_heal(metrics: dict, label: str, explanation: str = "") -> list:
 
 
 if __name__ == "__main__":
-    from monitor import simulate_anomaly
-    from detector import train_model, predict
-    from explainer import explain
-
-    model = train_model()
-    metrics = simulate_anomaly("cpu_spike")
-    label, score, _ = predict(model, metrics)
-    report = explain(metrics, label, score)
-    decide_and_heal(metrics, label, report)
+    decide_and_heal("Restart affected service / reclaim memory")

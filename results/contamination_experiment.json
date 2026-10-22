@@ -1,0 +1,58 @@
+{
+    "0.05": {
+        "accuracy": 0.8675,
+        "precision": 1.0,
+        "recall": 0.2429,
+        "f1_score": 0.3908,
+        "false_positive_rate": 0.0,
+        "confusion_matrix": {
+            "TN": 330,
+            "FP": 0,
+            "FN": 53,
+            "TP": 17
+        },
+        "detection_time_sec": 4.606
+    },
+    "0.1": {
+        "accuracy": 0.915,
+        "precision": 0.95,
+        "recall": 0.5429,
+        "f1_score": 0.6909,
+        "false_positive_rate": 0.0061,
+        "confusion_matrix": {
+            "TN": 328,
+            "FP": 2,
+            "FN": 32,
+            "TP": 38
+        },
+        "detection_time_sec": 3.8641
+    },
+    "0.15": {
+        "accuracy": 0.93,
+        "precision": 0.92,
+        "recall": 0.6571,
+        "f1_score": 0.7667,
+        "false_positive_rate": 0.0121,
+        "confusion_matrix": {
+            "TN": 326,
+            "FP": 4,
+            "FN": 24,
+            "TP": 46
+        },
+        "detection_time_sec": 3.8421
+    },
+    "0.2": {
+        "accuracy": 0.9425,
+        "precision": 0.831,
+        "recall": 0.8429,
+        "f1_score": 0.8369,
+        "false_positive_rate": 0.0364,
+        "confusion_matrix": {
+            "TN": 318,
+            "FP": 12,
+            "FN": 11,
+            "TP": 59
+        },
+        "detection_time_sec": 4.0459
+    }
+}

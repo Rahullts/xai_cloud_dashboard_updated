@@ -1,0 +1,26 @@
+{
+    "audit_summary": "The test set genuinely contains 1,230 rows. There was no validation leakage. The discrepancy was a textual reporting error regarding the number of generated sequences.",
+    "sequence_counts": {
+        "train": 120,
+        "validation": 30,
+        "test": 30,
+        "total": 180
+    },
+    "row_counts": {
+        "train": 4920,
+        "validation": 1230,
+        "test": 1230,
+        "total": 7380
+    },
+    "overlap_checks": {
+        "train_val_overlap": 0,
+        "train_test_overlap": 0,
+        "val_test_overlap": 0
+    },
+    "confusion_matrix_sample_count": 1230,
+    "scenario_support_total": 1230,
+    "early_warning_evaluation_sample_count": 30,
+    "early_warning_failure_sequences": 21,
+    "pre_threshold_test_sample_count": 1230,
+    "leakage_status": "No leakage. Strict sequence isolation verified."
+}

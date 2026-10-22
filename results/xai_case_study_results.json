@@ -1,0 +1,212 @@
+[
+    {
+        "sequence_id": "test_1",
+        "timestep": 14,
+        "scenario": "disk_gradual_exhaustion",
+        "model_score": 0.5905,
+        "likely_root_cause": "Combined Failure",
+        "recommended_recovery_action": "Controlled recovery sequence + alert",
+        "explanation_text": "The model detected a MEDIUM failure risk (model score: 0.59). Evidence supports a likely root cause of: COMBINED FAILURE. The most influential indicators are: Memory 10-step variability (6.38), Cpu 10-step variability (6.33), Network Recv 10-step average (11.63).",
+        "top_5_contributing_features": [
+            {
+                "feature": "memory_percent_mean_10",
+                "human_readable": "Memory 10-step average",
+                "contribution": -0.9994
+            },
+            {
+                "feature": "memory_percent_std_10",
+                "human_readable": "Memory 10-step variability",
+                "contribution": 0.587
+            },
+            {
+                "feature": "cpu_percent_std_10",
+                "human_readable": "Cpu 10-step variability",
+                "contribution": 0.3622
+            },
+            {
+                "feature": "net_bytes_recv_rate_mean_10",
+                "human_readable": "Network Recv 10-step average",
+                "contribution": 0.3433
+            },
+            {
+                "feature": "net_bytes_sent_rate_std_10",
+                "human_readable": "Network Sent 10-step variability",
+                "contribution": 0.3275
+            }
+        ],
+        "evidence_scores": {
+            "CPU": 0.3144,
+            "Memory": 0.3427,
+            "Disk": 0.0026,
+            "Network": 0.3403
+        }
+    },
+    {
+        "sequence_id": "test_4",
+        "timestep": 20,
+        "scenario": "combined_gradual_failure",
+        "model_score": 0.5372,
+        "likely_root_cause": "Combined Failure",
+        "recommended_recovery_action": "Controlled recovery sequence + alert",
+        "explanation_text": "The model detected a MEDIUM failure risk (model score: 0.54). Evidence supports a likely root cause of: COMBINED FAILURE. The most influential indicators are: Cpu 5-step trend (9.21), Disk 10-step delta (2.46), Network Recv 10-step trend (0.88).",
+        "top_5_contributing_features": [
+            {
+                "feature": "cpu_percent_std_10",
+                "human_readable": "Cpu 10-step variability",
+                "contribution": -0.4221
+            },
+            {
+                "feature": "memory_percent_mean_10",
+                "human_readable": "Memory 10-step average",
+                "contribution": -0.3662
+            },
+            {
+                "feature": "net_bytes_recv_rate_mean_10",
+                "human_readable": "Network Recv 10-step average",
+                "contribution": -0.2979
+            },
+            {
+                "feature": "cpu_percent_slope_5",
+                "human_readable": "Cpu 5-step trend",
+                "contribution": 0.2661
+            },
+            {
+                "feature": "disk_percent_delta_10",
+                "human_readable": "Disk 10-step delta",
+                "contribution": 0.2133
+            }
+        ],
+        "evidence_scores": {
+            "CPU": 0.2899,
+            "Memory": 0.1324,
+            "Disk": 0.3705,
+            "Network": 0.2071
+        }
+    },
+    {
+        "sequence_id": "test_6",
+        "timestep": 32,
+        "scenario": "network_degradation",
+        "model_score": 0.5341,
+        "likely_root_cause": "Combined Failure",
+        "recommended_recovery_action": "Controlled recovery sequence + alert",
+        "explanation_text": "The model detected a MEDIUM failure risk (model score: 0.53). Evidence supports a likely root cause of: COMBINED FAILURE. The most influential indicators are: Memory 10-step variability (7.44), Network Sent 10-step variability (3.01), Network Recv 10-step variability (5.92).",
+        "top_5_contributing_features": [
+            {
+                "feature": "memory_percent_std_10",
+                "human_readable": "Memory 10-step variability",
+                "contribution": 0.4159
+            },
+            {
+                "feature": "cpu_percent_mean_10",
+                "human_readable": "Cpu 10-step average",
+                "contribution": -0.248
+            },
+            {
+                "feature": "net_bytes_sent_rate_std_10",
+                "human_readable": "Network Sent 10-step variability",
+                "contribution": 0.2422
+            },
+            {
+                "feature": "net_bytes_recv_rate_slope_10",
+                "human_readable": "Network Recv 10-step trend",
+                "contribution": -0.2005
+            },
+            {
+                "feature": "net_bytes_recv_rate_std_10",
+                "human_readable": "Network Recv 10-step variability",
+                "contribution": 0.1526
+            }
+        ],
+        "evidence_scores": {
+            "CPU": 0.0943,
+            "Memory": 0.4647,
+            "Disk": 0.0245,
+            "Network": 0.4165
+        }
+    },
+    {
+        "sequence_id": "test_15",
+        "timestep": 35,
+        "scenario": "cpu_sudden_failure",
+        "model_score": 0.6855,
+        "likely_root_cause": "Memory Leak",
+        "recommended_recovery_action": "Restart affected service / reclaim memory",
+        "explanation_text": "The model detected a HIGH failure risk (model score: 0.69). Evidence supports a likely root cause of: MEMORY LEAK. The most influential indicators are: Memory 10-step average (48.29), Network Sent 10-step variability (2.99), Cpu 10-step variability (8.02).",
+        "top_5_contributing_features": [
+            {
+                "feature": "memory_percent_mean_10",
+                "human_readable": "Memory 10-step average",
+                "contribution": 0.9166
+            },
+            {
+                "feature": "net_bytes_recv_rate_mean_10",
+                "human_readable": "Network Recv 10-step average",
+                "contribution": -0.2924
+            },
+            {
+                "feature": "net_bytes_sent_rate_std_10",
+                "human_readable": "Network Sent 10-step variability",
+                "contribution": 0.2457
+            },
+            {
+                "feature": "memory_percent_mean_5",
+                "human_readable": "Memory 5-step average",
+                "contribution": -0.2309
+            },
+            {
+                "feature": "net_bytes_recv_rate_std_10",
+                "human_readable": "Network Recv 10-step variability",
+                "contribution": -0.2257
+            }
+        ],
+        "evidence_scores": {
+            "CPU": 0.1119,
+            "Memory": 0.6185,
+            "Disk": 0.0666,
+            "Network": 0.203
+        }
+    },
+    {
+        "sequence_id": "test_25",
+        "timestep": 38,
+        "scenario": "cpu_gradual_failure",
+        "model_score": 0.502,
+        "likely_root_cause": "Memory Leak",
+        "recommended_recovery_action": "Restart affected service / reclaim memory",
+        "explanation_text": "The model detected a MEDIUM failure risk (model score: 0.50). Evidence supports a likely root cause of: MEMORY LEAK. The most influential indicators are: Memory 10-step trend (2.71), Memory 10-step average (42.77), Cpu 10-step variability (8.92).",
+        "top_5_contributing_features": [
+            {
+                "feature": "memory_percent_slope_10",
+                "human_readable": "Memory 10-step trend",
+                "contribution": 0.4659
+            },
+            {
+                "feature": "memory_percent_std_10",
+                "human_readable": "Memory 10-step variability",
+                "contribution": -0.3938
+            },
+            {
+                "feature": "net_bytes_recv_rate_mean_10",
+                "human_readable": "Network Recv 10-step average",
+                "contribution": -0.2721
+            },
+            {
+                "feature": "memory_percent_mean_5",
+                "human_readable": "Memory 5-step average",
+                "contribution": -0.1859
+            },
+            {
+                "feature": "memory_percent_mean_10",
+                "human_readable": "Memory 10-step average",
+                "contribution": 0.1671
+            }
+        ],
+        "evidence_scores": {
+            "CPU": 0.0981,
+            "Memory": 0.5286,
+            "Disk": 0.0925,
+            "Network": 0.2808
+        }
+    }
+]

@@ -1,0 +1,98 @@
+{
+    "disk_gradual_exhaustion": {
+        "support": 246,
+        "precision": 0.9519,
+        "recall": 0.7911,
+        "f1_score": 0.8641,
+        "confusion_matrix": {
+            "TN": 12,
+            "FP": 9,
+            "FN": 47,
+            "TP": 178
+        }
+    },
+    "normal_stable": {
+        "support": 205,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1_score": 0.0,
+        "confusion_matrix": {
+            "TN": 132,
+            "FP": 73,
+            "FN": 0,
+            "TP": 0
+        }
+    },
+    "combined_gradual_failure": {
+        "support": 246,
+        "precision": 0.82,
+        "recall": 0.7546,
+        "f1_score": 0.7859,
+        "confusion_matrix": {
+            "TN": 56,
+            "FP": 27,
+            "FN": 40,
+            "TP": 123
+        }
+    },
+    "normal_variable": {
+        "support": 164,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1_score": 0.0,
+        "confusion_matrix": {
+            "TN": 164,
+            "FP": 0,
+            "FN": 0,
+            "TP": 0
+        }
+    },
+    "network_degradation": {
+        "support": 123,
+        "precision": 0.6351,
+        "recall": 0.7833,
+        "f1_score": 0.7015,
+        "confusion_matrix": {
+            "TN": 36,
+            "FP": 27,
+            "FN": 13,
+            "TP": 47
+        }
+    },
+    "memory_gradual_leak": {
+        "support": 41,
+        "precision": 1.0,
+        "recall": 0.6486,
+        "f1_score": 0.7869,
+        "confusion_matrix": {
+            "TN": 4,
+            "FP": 0,
+            "FN": 13,
+            "TP": 24
+        }
+    },
+    "cpu_sudden_failure": {
+        "support": 41,
+        "precision": 0.5294,
+        "recall": 0.5294,
+        "f1_score": 0.5294,
+        "confusion_matrix": {
+            "TN": 16,
+            "FP": 8,
+            "FN": 8,
+            "TP": 9
+        }
+    },
+    "cpu_gradual_failure": {
+        "support": 164,
+        "precision": 0.8169,
+        "recall": 0.5273,
+        "f1_score": 0.6409,
+        "confusion_matrix": {
+            "TN": 41,
+            "FP": 13,
+            "FN": 52,
+            "TP": 58
+        }
+    }
+}

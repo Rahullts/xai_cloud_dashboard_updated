@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 360" font-family="Arial, sans-serif">
+  <rect width="860" height="360" fill="#0e1118"/>
+  <text x="430" y="28" text-anchor="middle" fill="#dce1ee" font-size="14" font-weight="bold">Figure 7 — Recovery Verification: Before / Healing / After</text>
+  <text x="430" y="46" text-anchor="middle" fill="#7e8aa0" font-size="11">Scenario: Network Degradation  |  Post-healing telemetry: simulated normal_stable  |  Model: Logistic Regression</text>
+
+  <!-- BEFORE block -->
+  <rect x="50" y="75" width="200" height="180" rx="8" fill="#131820" stroke="#ef4444" stroke-width="2"/>
+  <text x="150" y="105" text-anchor="middle" fill="#ef4444" font-size="11" font-weight="bold" letter-spacing="1">BEFORE HEALING</text>
+  <text x="150" y="135" text-anchor="middle" fill="#ef4444" font-size="30" font-weight="900">CRITICAL</text>
+  <text x="150" y="165" text-anchor="middle" fill="#7e8aa0" font-size="12">Risk Score</text>
+  <text x="150" y="190" text-anchor="middle" fill="#ef4444" font-size="22" font-weight="700" font-family="Consolas, monospace">0.8837</text>
+  <text x="150" y="215" text-anchor="middle" fill="#7e8aa0" font-size="10">label = 1 (FAILURE)</text>
+  <text x="150" y="240" text-anchor="middle" fill="#7e8aa0" font-size="10">Logistic Regression · seed 42</text>
+
+  <!-- Arrow + Action -->
+  <line x1="250" y1="165" x2="300" y2="165" stroke="#f59e0b" stroke-width="2" marker-end="url(#arr2)"/>
+  <rect x="255" y="75" width="190" height="90" rx="6" fill="#131820" stroke="#f59e0b" stroke-width="1.5"/>
+  <text x="350" y="100" text-anchor="middle" fill="#f59e0b" font-size="9" font-weight="bold" letter-spacing="1">SIMULATED ACTION</text>
+  <text x="350" y="118" text-anchor="middle" fill="#dce1ee" font-size="10">Controlled recovery</text>
+  <text x="350" y="132" text-anchor="middle" fill="#dce1ee" font-size="10">sequence + alert</text>
+  <text x="350" y="150" text-anchor="middle" fill="#424d65" font-size="9" font-style="italic">NOT a real cloud API call</text>
+
+  <!-- Post-healing arrow -->
+  <line x1="445" y1="165" x2="490" y2="165" stroke="#f59e0b" stroke-width="2" marker-end="url(#arr2)"/>
+
+  <!-- AFTER block -->
+  <rect x="490" y="75" width="200" height="180" rx="8" fill="#131820" stroke="#f59e0b" stroke-width="2"/>
+  <text x="590" y="105" text-anchor="middle" fill="#f59e0b" font-size="11" font-weight="bold" letter-spacing="1">AFTER HEALING</text>
+  <text x="590" y="135" text-anchor="middle" fill="#f59e0b" font-size="30" font-weight="900">MEDIUM</text>
+  <text x="590" y="165" text-anchor="middle" fill="#7e8aa0" font-size="12">Risk Score</text>
+  <text x="590" y="190" text-anchor="middle" fill="#f59e0b" font-size="22" font-weight="700" font-family="Consolas, monospace">0.4471</text>
+  <text x="590" y="215" text-anchor="middle" fill="#7e8aa0" font-size="10">Simulated normal_stable sequence</text>
+  <text x="590" y="230" text-anchor="middle" fill="#7e8aa0" font-size="10">Same LR model · re-evaluated</text>
+
+  <!-- Verdict -->
+  <rect x="340" y="200" width="200" height="60" rx="8" fill="#131820" stroke="#f59e0b" stroke-width="2"/>
+  <text x="440" y="225" text-anchor="middle" fill="#f59e0b" font-size="13" font-weight="900">INCONCLUSIVE</text>
+  <text x="440" y="245" text-anchor="middle" fill="#7e8aa0" font-size="9">Risk decreased but remained above LOW threshold</text>
+
+  <!-- Delta annotation -->
+  <text x="440" y="300" text-anchor="middle" fill="#22c55e" font-size="13" font-weight="700">▼ 49.4% reduction in risk score</text>
+  <text x="440" y="318" text-anchor="middle" fill="#424d65" font-size="10" font-style="italic">0.884 → 0.447. MEDIUM does not satisfy RECOVERED (requires LOW ≤ 0.25)</text>
+
+  <!-- Conservative rationale -->
+  <text x="430" y="345" text-anchor="middle" fill="#424d65" font-size="9" font-style="italic">The system correctly declines to report RECOVERED when meaningful risk remains. This demonstrates the conservatism of the three-class verification scheme.</text>
+
+  <defs>
+    <marker id="arr2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#f59e0b"/>
+    </marker>
+  </defs>
+</svg>

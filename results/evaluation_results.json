@@ -1,0 +1,42 @@
+{
+    "dataset": {
+        "train_size": 1200,
+        "val_size": 400,
+        "test_size": 400,
+        "random_seed": 42
+    },
+    "model_configuration": {
+        "algorithm": "IsolationForest",
+        "preprocessing": "StandardScaler",
+        "best_contamination": 0.2
+    },
+    "baseline_metrics": {
+        "accuracy": 0.9025,
+        "precision": 1.0,
+        "recall": 0.4348,
+        "f1_score": 0.6061,
+        "false_positive_rate": 0.0,
+        "confusion_matrix": {
+            "TN": 331,
+            "FP": 0,
+            "FN": 39,
+            "TP": 30
+        },
+        "detection_time_sec": 0.0001
+    },
+    "isolation_forest_metrics": {
+        "accuracy": 0.91,
+        "precision": 0.7037,
+        "recall": 0.8261,
+        "f1_score": 0.76,
+        "false_positive_rate": 0.0725,
+        "confusion_matrix": {
+            "TN": 307,
+            "FP": 24,
+            "FN": 12,
+            "TP": 57
+        },
+        "detection_time_sec": 0.0061,
+        "best_contamination": 0.2
+    }
+}

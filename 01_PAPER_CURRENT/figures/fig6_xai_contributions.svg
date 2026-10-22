@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 380" font-family="Arial, sans-serif">
+  <rect width="860" height="380" fill="#0e1118"/>
+  <text x="430" y="28" text-anchor="middle" fill="#dce1ee" font-size="14" font-weight="bold">Figure 6 — XAI Coefficient Contributions (Case A: disk_gradual_exhaustion)</text>
+  <text x="430" y="46" text-anchor="middle" fill="#7e8aa0" font-size="11">Contribution = scaled_feature_value × LR_coefficient  |  Risk Score: 0.591  |  Category: Combined Failure</text>
+
+  <!-- X axis -->
+  <line x1="340" y1="75" x2="340" y2="305" stroke="#272f42" stroke-width="1.5"/>
+  <!-- Grid labels -->
+  <text x="340" y="320" text-anchor="middle" fill="#424d65" font-size="9">0</text>
+  <text x="490" y="320" text-anchor="middle" fill="#ef4444" font-size="9">+0.5 (Risk ↑)</text>
+  <text x="190" y="320" text-anchor="middle" fill="#3b82f6" font-size="9">-0.5 (Risk ↓)</text>
+
+  <!-- Vertical grid lines -->
+  <line x1="490" y1="75" x2="490" y2="305" stroke="#1d2334" stroke-width="0.7" stroke-dasharray="3,5"/>
+  <line x1="190" y1="75" x2="190" y2="305" stroke="#1d2334" stroke-width="0.7" stroke-dasharray="3,5"/>
+  <line x1="415" y1="75" x2="415" y2="305" stroke="#1d2334" stroke-width="0.5" stroke-dasharray="2,8"/>
+  <line x1="265" y1="75" x2="265" y2="305" stroke="#1d2334" stroke-width="0.5" stroke-dasharray="2,8"/>
+
+  <!-- Bars: center=340, scale 1.0 = 150px -->
+  <!-- Feature 1: Memory 10-step average: -0.999 -> width=150px LEFT -->
+  <rect x="190" y="85" width="150" height="30" fill="#3b82f6" opacity="0.85" rx="3"/>
+  <text x="183" y="105" text-anchor="end" fill="#dce1ee" font-size="10">Memory 10-step avg</text>
+  <text x="196" y="105" text-anchor="start" fill="#fff" font-size="9" font-weight="bold">−0.999</text>
+  <text x="30" y="105" text-anchor="start" fill="#3b82f6" font-size="9">#1</text>
+
+  <!-- Feature 2: Memory 10-step std: +0.587 -> width=88px RIGHT -->
+  <rect x="340" y="125" width="88" height="30" fill="#ef4444" opacity="0.85" rx="3"/>
+  <text x="333" y="145" text-anchor="end" fill="#dce1ee" font-size="10">Memory 10-step var.</text>
+  <text x="346" y="145" text-anchor="start" fill="#fff" font-size="9" font-weight="bold">+0.587</text>
+  <text x="30" y="145" text-anchor="start" fill="#ef4444" font-size="9">#2</text>
+
+  <!-- Feature 3: CPU 10-step std: +0.362 -> width=54px RIGHT -->
+  <rect x="340" y="165" width="54" height="30" fill="#ef4444" opacity="0.75" rx="3"/>
+  <text x="333" y="185" text-anchor="end" fill="#dce1ee" font-size="10">CPU 10-step var.</text>
+  <text x="346" y="185" text-anchor="start" fill="#fff" font-size="9" font-weight="bold">+0.362</text>
+  <text x="30" y="185" text-anchor="start" fill="#ef4444" font-size="9">#3</text>
+
+  <!-- Feature 4: Network Recv 10-step mean: +0.343 -> width=51px RIGHT -->
+  <rect x="340" y="205" width="51" height="30" fill="#ef4444" opacity="0.70" rx="3"/>
+  <text x="333" y="225" text-anchor="end" fill="#dce1ee" font-size="10">Net Recv 10-step avg</text>
+  <text x="346" y="225" text-anchor="start" fill="#fff" font-size="9" font-weight="bold">+0.343</text>
+  <text x="30" y="225" text-anchor="start" fill="#ef4444" font-size="9">#4</text>
+
+  <!-- Feature 5: Net Sent std: +0.328 -> width=49px RIGHT -->
+  <rect x="340" y="245" width="49" height="30" fill="#ef4444" opacity="0.65" rx="3"/>
+  <text x="333" y="265" text-anchor="end" fill="#dce1ee" font-size="10">Net Sent 10-step var.</text>
+  <text x="346" y="265" text-anchor="start" fill="#fff" font-size="9" font-weight="bold">+0.328</text>
+  <text x="30" y="265" text-anchor="start" fill="#ef4444" font-size="9">#5</text>
+
+  <!-- Legend -->
+  <rect x="570" y="130" width="14" height="14" rx="2" fill="#ef4444"/>
+  <text x="590" y="142" fill="#dce1ee" font-size="10">Positive contribution → Risk ↑</text>
+  <rect x="570" y="155" width="14" height="14" rx="2" fill="#3b82f6"/>
+  <text x="590" y="167" fill="#dce1ee" font-size="10">Negative contribution → Risk ↓</text>
+
+  <!-- Source note -->
+  <text x="430" y="345" text-anchor="middle" fill="#424d65" font-size="9" font-style="italic">Source: results/xai_case_study_results.json (test_1, disk_gradual_exhaustion). Contribution = StandardScaler(value) × LR coefficient.</text>
+  <text x="430" y="360" text-anchor="middle" fill="#424d65" font-size="9" font-style="italic">Method: deterministic linear attribution (not SHAP / not LIME). Bar width proportional to absolute contribution value.</text>
+</svg>

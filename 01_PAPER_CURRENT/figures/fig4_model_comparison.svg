@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 400" font-family="Arial, sans-serif">
+  <rect width="860" height="400" fill="#0e1118"/>
+  <text x="430" y="30" text-anchor="middle" fill="#dce1ee" font-size="14" font-weight="bold">Figure 4 — Temporal Model Comparison (5-Seed Mean F1 and ROC-AUC)</text>
+
+  <!-- F1 BAR CHART -->
+  <!-- Axes -->
+  <line x1="70" y1="60" x2="70" y2="310" stroke="#1d2334" stroke-width="1.5"/>
+  <line x1="70" y1="310" x2="430" y2="310" stroke="#1d2334" stroke-width="1.5"/>
+  <text x="250" y="355" text-anchor="middle" fill="#7e8aa0" font-size="11" font-weight="bold">F1 Score (mean across 5 seeds)</text>
+
+  <!-- Y-axis labels -->
+  <text x="65" y="314" text-anchor="end" fill="#424d65" font-size="9">0.0</text>
+  <text x="65" y="264" text-anchor="end" fill="#424d65" font-size="9">0.2</text>
+  <text x="65" y="214" text-anchor="end" fill="#424d65" font-size="9">0.4</text>
+  <text x="65" y="164" text-anchor="end" fill="#424d65" font-size="9">0.6</text>
+  <text x="65" y="114" text-anchor="end" fill="#424d65" font-size="9">0.8</text>
+  <text x="65" y="64" text-anchor="end" fill="#424d65" font-size="9">1.0</text>
+  <!-- Grid lines -->
+  <line x1="70" y1="264" x2="430" y2="264" stroke="#131820" stroke-width="0.8" stroke-dasharray="3,5"/>
+  <line x1="70" y1="214" x2="430" y2="214" stroke="#131820" stroke-width="0.8" stroke-dasharray="3,5"/>
+  <line x1="70" y1="164" x2="430" y2="164" stroke="#131820" stroke-width="0.8" stroke-dasharray="3,5"/>
+  <line x1="70" y1="114" x2="430" y2="114" stroke="#131820" stroke-width="0.8" stroke-dasharray="3,5"/>
+  <line x1="70" y1="64" x2="430" y2="64" stroke="#131820" stroke-width="0.8" stroke-dasharray="3,5"/>
+
+  <!-- Bars: scale 0-1 maps to 310-60 = 250px -->
+  <!-- Majority baseline: F1=0.514 -> 250*0.514=128.5px, top=310-128.5=181.5 -->
+  <rect x="90" y="181" width="42" height="129" fill="#424d65" rx="3"/>
+  <text x="111" y="175" text-anchor="middle" fill="#7e8aa0" font-size="9">0.514</text>
+  <text x="111" y="328" text-anchor="middle" fill="#7e8aa0" font-size="9" transform="rotate(-35,111,328)">Majority</text>
+
+  <!-- Threshold baseline: F1=0.156 -> 250*0.156=39px, top=271 -->
+  <rect x="148" y="271" width="42" height="39" fill="#424d65" rx="3"/>
+  <text x="169" y="265" text-anchor="middle" fill="#7e8aa0" font-size="9">0.156</text>
+  <text x="169" y="328" text-anchor="middle" fill="#7e8aa0" font-size="9" transform="rotate(-35,169,328)">Threshold</text>
+
+  <!-- LR: F1=0.692 -> 250*0.692=173px, top=137 -->
+  <rect x="206" y="137" width="42" height="173" fill="#4b8eff" rx="3"/>
+  <text x="227" y="131" text-anchor="middle" fill="#4b8eff" font-size="9">0.692</text>
+  <text x="227" y="328" text-anchor="middle" fill="#4b8eff" font-size="9" transform="rotate(-35,227,328)">Logistic Reg</text>
+
+  <!-- RF: F1=0.696 -> 250*0.696=174px, top=136 -->
+  <rect x="264" y="136" width="42" height="174" fill="#22c55e" rx="3"/>
+  <text x="285" y="130" text-anchor="middle" fill="#22c55e" font-size="9">0.696</text>
+  <text x="285" y="328" text-anchor="middle" fill="#22c55e" font-size="9" transform="rotate(-35,285,328)">Random Forest</text>
+
+  <!-- GB: F1=0.699 -> 250*0.699=174.75px, top=135 -->
+  <rect x="322" y="135" width="42" height="175" fill="#9b8cff" rx="3"/>
+  <text x="343" y="129" text-anchor="middle" fill="#9b8cff" font-size="9">0.699</text>
+  <text x="343" y="328" text-anchor="middle" fill="#9b8cff" font-size="9" transform="rotate(-35,343,328)">Grad. Boosting</text>
+
+  <!-- AUC LINE CHART -->
+  <line x1="480" y1="60" x2="480" y2="310" stroke="#1d2334" stroke-width="1.5"/>
+  <line x1="480" y1="310" x2="840" y2="310" stroke="#1d2334" stroke-width="1.5"/>
+  <text x="660" y="355" text-anchor="middle" fill="#7e8aa0" font-size="11" font-weight="bold">ROC-AUC (mean across 5 seeds)</text>
+
+  <!-- Y-axis labels, same scale -->
+  <text x="475" y="314" text-anchor="end" fill="#424d65" font-size="9">0.0</text>
+  <text x="475" y="264" text-anchor="end" fill="#424d65" font-size="9">0.2</text>
+  <text x="475" y="214" text-anchor="end" fill="#424d65" font-size="9">0.4</text>
+  <text x="475" y="164" text-anchor="end" fill="#424d65" font-size="9">0.6</text>
+  <text x="475" y="114" text-anchor="end" fill="#424d65" font-size="9">0.8</text>
+  <text x="475" y="64" text-anchor="end" fill="#424d65" font-size="9">1.0</text>
+  <line x1="480" y1="114" x2="840" y2="114" stroke="#131820" stroke-width="0.8" stroke-dasharray="3,5"/>
+  <line x1="480" y1="164" x2="840" y2="164" stroke="#131820" stroke-width="0.8" stroke-dasharray="3,5"/>
+
+  <!-- AUC Points: scale 0-1 = 250px. LR=0.813->y=310-250*0.813=107.75; RF=0.819->y=105; GB=0.826->y=103.5 -->
+  <!-- X positions: LR=560, RF=660, GB=760 -->
+  <polyline points="560,107 660,105 760,103" fill="none" stroke="#4b8eff" stroke-width="2"/>
+  <circle cx="560" cy="107" r="5" fill="#4b8eff"/>
+  <circle cx="660" cy="105" r="5" fill="#22c55e"/>
+  <circle cx="760" cy="103" r="5" fill="#9b8cff"/>
+  <text x="560" y="98" text-anchor="middle" fill="#4b8eff" font-size="9">0.813</text>
+  <text x="660" y="96" text-anchor="middle" fill="#22c55e" font-size="9">0.819</text>
+  <text x="760" y="94" text-anchor="middle" fill="#9b8cff" font-size="9">0.826</text>
+  <text x="560" y="328" text-anchor="middle" fill="#4b8eff" font-size="9" transform="rotate(-35,560,328)">Logistic Reg</text>
+  <text x="660" y="328" text-anchor="middle" fill="#22c55e" font-size="9" transform="rotate(-35,660,328)">Random Forest</text>
+  <text x="760" y="328" text-anchor="middle" fill="#9b8cff" font-size="9" transform="rotate(-35,760,328)">Grad. Boosting</text>
+
+  <!-- Baselines note -->
+  <text x="430" y="385" text-anchor="middle" fill="#424d65" font-size="9" font-style="italic">Source: results/predictive_model_results.json (model_summary_mean_std). Baselines have no AUC (non-probabilistic). Error bars omitted for clarity; ±std in Table 4.</text>
+</svg>

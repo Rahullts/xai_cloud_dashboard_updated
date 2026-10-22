@@ -1,0 +1,22 @@
+{
+    "memory_percent_std_10": 0.160291,
+    "disk_percent_std_5": 0.091074,
+    "cpu_percent_mean_5": 0.084653,
+    "net_bytes_recv_rate_std_10": 0.080867,
+    "net_bytes_sent_rate_std_10": 0.07499,
+    "disk_percent_std_10": 0.073399,
+    "memory_percent_mean_5": 0.073104,
+    "memory_percent_mean_10": 0.056447,
+    "disk_percent_delta_10": 0.050722,
+    "disk_percent_mean_10": 0.043039,
+    "cpu_percent_mean_10": 0.030062,
+    "cpu_percent_std_10": 0.026812,
+    "disk_percent_mean_5": 0.026105,
+    "net_bytes_recv_rate_mean_5": 0.019873,
+    "net_bytes_recv_rate_mean_10": 0.015253,
+    "memory_percent_std_5": 0.013258,
+    "disk_percent_slope_10": 0.012505,
+    "disk_percent_slope_5": 0.011278,
+    "net_bytes_sent_rate_mean_5": 0.008672,
+    "cpu_percent_current": 0.00816
+}

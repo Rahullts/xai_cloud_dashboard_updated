@@ -1,6 +1,6 @@
 # =============================================================
-# main.py — Orchestrator
-# Ties all modules together: Monitor → Detect → Explain → Heal
+# main.py -- Orchestrator
+# Ties all modules together: Monitor -> Detect -> Explain -> Heal
 # Run this file to see the full pipeline in action.
 # =============================================================
 
@@ -8,7 +8,7 @@ import time
 from monitor  import simulate_normal, simulate_anomaly
 from detector import train_model, predict
 from explainer import explain
-from healer   import decide_and_heal
+from healer   import decide_and_heal, LOG_FILE
 
 DEMO_DELAY = 1.0   # seconds between demo rounds
 
@@ -21,13 +21,13 @@ def run_demo():
       4. Disk full
       5. Combined failure
     """
-    print("\n" + "★"*55)
+    print("\n" + "*"*55)
     print("  Explainable AI-Based Self-Healing Cloud Application")
-    print("★"*55)
+    print("*"*55)
 
     # Step 1: Train the model
     model = train_model(n_samples=200)
-    print(f"\n  [✓] Model ready.\n")
+    print(f"\n  [OK] Model ready.\n")
 
     # Step 2: Define scenarios to demonstrate
     scenarios = [
@@ -41,9 +41,9 @@ def run_demo():
     for generate_metrics, scenario_name in scenarios:
         time.sleep(DEMO_DELAY)
 
-        print("\n" + "─"*55)
+        print("\n" + "-"*55)
         print(f"  {scenario_name}")
-        print("─"*55)
+        print("-"*55)
 
         # Step 3: Collect metrics
         metrics = generate_metrics()
@@ -60,9 +60,10 @@ def run_demo():
         # Step 6: Self-Healing
         decide_and_heal(metrics, label, xai_report)
 
-    print("\n\n" + "★"*55)
-    print("  Demo complete! Simulated recovery recommendations are recorded in recovery_log.jsonl.")
-    print("★"*55)
+    print("\n\n" + "*"*55)
+    print(f"  Demo complete! Check recovery log at:")
+    print(f"  {LOG_FILE}")
+    print("*"*55)
 
 
 if __name__ == "__main__":
