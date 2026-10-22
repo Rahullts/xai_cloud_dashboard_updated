@@ -1,0 +1,16 @@
+{"timestamp_utc": "2026-10-22T08:05:46.762268+00:00", "simulation": true, "message": "NORMAL: no recovery action proposed."}
+{"timestamp_utc": "2026-10-22T08:05:47.792259+00:00", "simulation": true, "message": "PROPOSED restart_service: CPU usage exceeded threshold"}
+{"timestamp_utc": "2026-10-22T08:05:47.794424+00:00", "simulation": true, "message": "PROPOSED scale_out: CPU usage exceeded threshold"}
+{"timestamp_utc": "2026-10-22T08:05:47.796199+00:00", "simulation": true, "message": "PLAN_CREATED: 2 simulated action(s)"}
+{"timestamp_utc": "2026-10-22T08:05:48.827128+00:00", "simulation": true, "message": "PROPOSED inspect_memory_pressure: Memory usage exceeded threshold"}
+{"timestamp_utc": "2026-10-22T08:05:48.829018+00:00", "simulation": true, "message": "PROPOSED restart_worker: Memory usage exceeded threshold"}
+{"timestamp_utc": "2026-10-22T08:05:48.830585+00:00", "simulation": true, "message": "PLAN_CREATED: 2 simulated action(s)"}
+{"timestamp_utc": "2026-10-22T08:05:49.863690+00:00", "simulation": true, "message": "PROPOSED review_disk_cleanup: Disk usage exceeded threshold"}
+{"timestamp_utc": "2026-10-22T08:05:49.865539+00:00", "simulation": true, "message": "PLAN_CREATED: 1 simulated action(s)"}
+{"timestamp_utc": "2026-10-22T08:05:50.896472+00:00", "simulation": true, "message": "PROPOSED restart_service: CPU usage exceeded threshold"}
+{"timestamp_utc": "2026-10-22T08:05:50.897678+00:00", "simulation": true, "message": "PROPOSED scale_out: CPU usage exceeded threshold"}
+{"timestamp_utc": "2026-10-22T08:05:50.898714+00:00", "simulation": true, "message": "PROPOSED inspect_memory_pressure: Memory usage exceeded threshold"}
+{"timestamp_utc": "2026-10-22T08:05:50.900149+00:00", "simulation": true, "message": "PROPOSED restart_worker: Memory usage exceeded threshold"}
+{"timestamp_utc": "2026-10-22T08:05:50.900877+00:00", "simulation": true, "message": "PROPOSED review_disk_cleanup: Disk usage exceeded threshold"}
+{"timestamp_utc": "2026-10-22T08:05:50.902439+00:00", "simulation": true, "message": "PROPOSED notify_operator: Network volume exceeded threshold"}
+{"timestamp_utc": "2026-10-22T08:05:50.903683+00:00", "simulation": true, "message": "PLAN_CREATED: 6 simulated action(s)"}

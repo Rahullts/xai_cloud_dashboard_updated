@@ -269,13 +269,6 @@ async function runScenario(s, resetTimer=true){
   }
   if(resetTimer) restartTimer();
 }
-function renderBanner(anomaly,score){
-  const env=document.getElementById('env-select').value;
-  const b=document.getElementById('status-banner'),bi=document.getElementById('banner-icon'),bt=document.getElementById('banner-text'),bs=document.getElementById('banner-sub');
-  document.getElementById('banner-score-val').textContent=score;
-  if(anomaly){b.style.background='#2a0a0a';b.style.borderColor='#ef4444';bi.style.background='#ef4444';bt.style.color='#ef4444';bt.textContent='Anomaly Detected';bs.textContent=`${env} environment — healing initiated`;document.getElementById('status-label').textContent='Alert Active';document.getElementById('pulse-dot').style.background='#ef4444';}
-  else{b.style.background='#0f1e13';b.style.borderColor='#22c55e';bi.style.background='#22c55e';bt.style.color='#22c55e';bt.textContent='System Normal';bs.textContent='All metrics within safe range';document.getElementById('status-label').textContent='System Online';document.getElementById('pulse-dot').style.background='#22c55e';}
-}
 function autoScan(){runScenario(currentScenario,false);}
 function restartTimer(){if(scanTimer)clearInterval(scanTimer);const iv=parseInt(document.getElementById('interval-select').value)||5000;scanTimer=setInterval(autoScan,iv);}
 document.getElementById('cpu-thresh').addEventListener('input',function(){document.getElementById('cpu-thresh-val').textContent=this.value+'%';});
@@ -296,7 +289,7 @@ runScenario('normal');restartTimer();
 
 @app.route("/")
 def index():
-    """Serve the orange-themed dashboard. All simulation logic runs client-side."""
+    """Serve the orange-themed dashboard connected to the server-side ML and simulation pipeline."""
     return render_template_string(HTML)
 
 
