@@ -4,12 +4,12 @@
 # Open: http://localhost:5000
 # =============================================================
 
-from flask import Flask, render_template_string, jsonify
-import random, io, sys
+from flask import Flask, render_template_string, jsonify, request
+
 from monitor   import simulate_normal, simulate_anomaly
 from detector  import train_model, predict
 from explainer import explain
-from healer    import decide_and_heal
+from healer    import select_recovery_actions
 
 app = Flask(__name__)
 
@@ -240,7 +240,7 @@ function renderActions(m,anomaly){
     return;
   }
   const acts=[];
-  if(m.cpu_percent>cpuT){acts.push({icon:'↺',color:'#f97316',text:`Restart service: ${appName}`,status:'executed'});acts.push({icon:'⊕',color:'#fb923c',text:'Scale out +1 instance',status:'executed'});}
+  if(m.cpu_percent>cpuT){acts.push({icon:'↺',color:'#f97316',text:`Restart service: ${appName}`,status:'proposed'});acts.push({icon:'⊕',color:'#fb923c',text:'Scale out +1 instance',status:'executed'});}
   if(m.memory_percent>memT){acts.push({icon:'✕',color:'#3b82f6',text:'Kill runaway process',status:'executed'});acts.push({icon:'↺',color:'#3b82f6',text:'Restart memory worker',status:'executed'});}
   if(m.disk_percent>85) acts.push({icon:'⊟',color:'#eab308',text:'Clear cache (512 MB freed)',status:'executed'});
   if(m.net_bytes_sent>40||m.latency_ms>150) acts.push({icon:'◉',color:'#8b5cf6',text:'Alert: ops team notified',status:'alerted'});
@@ -259,7 +259,7 @@ function renderBanner(anomaly,score){
   const b=document.getElementById('status-banner'),bi=document.getElementById('banner-icon'),bt=document.getElementById('banner-text'),bs=document.getElementById('banner-sub');
   document.getElementById('banner-score-val').textContent=score;
   if(anomaly){
-    b.style.background='#2a0a0a';b.style.borderColor='#ef4444';bi.style.background='#ef4444';bt.style.color='#ef4444';bt.textContent='Anomaly Detected';bs.textContent=`${env} environment — healing initiated`;
+    b.style.background='#2a0a0a';b.style.borderColor='#ef4444';bi.style.background='#ef4444';bt.style.color='#ef4444';bt.textContent='Anomaly Detected';bs.textContent=`${env} environment — recovery plan proposed (simulation only)`;
     document.getElementById('status-label').textContent='Alert Active';document.getElementById('pulse-dot').style.background='#ef4444';
   } else {
     b.style.background='#0f1e13';b.style.borderColor='#22c55e';bi.style.background='#22c55e';bt.style.color='#22c55e';bt.textContent='System Normal';bs.textContent='All metrics within safe range';
@@ -272,10 +272,24 @@ function addLog(msg){
   if(logLines.length>20) logLines=logLines.slice(0,20);
   document.getElementById('log-panel').innerHTML=logLines.map((l,i)=>`<div style="color:${i===0?'#9aa3b8':'#6b7590'}">${l}</div>`).join('');
 }
-function runScenario(s){
-  currentScenario=s;const m=getMetrics(s),anomaly=isAnomaly(m),score=anomalyScore(m);
-  renderMetricCards(m,anomaly);renderXAI(m,anomaly,score);renderActions(m,anomaly);renderBanner(m,anomaly,score);
-  addLog(`Scenario injected: ${s.toUpperCase()} — ${anomaly?'ANOMALY detected':'NORMAL state'}`);restartTimer();
+async function runScenario(s, resetTimer=true){
+  currentScenario=s;
+  try {
+    const response=await fetch('/api/scan?scenario='+encodeURIComponent(s));
+    const data=await response.json();
+    if(!response.ok) throw new Error(data.error||'Scan failed');
+    const m=data.metrics;
+    const anomaly=data.label==='ANOMALY';
+    const score=Number(data.score).toFixed(4);
+    renderMetricCards(m,anomaly);
+    renderXAI(m,anomaly,score);
+    renderActions(m,anomaly);
+    renderBanner(anomaly,score);
+    addLog(`Server ML scan: ${s.toUpperCase()} — ${data.label}; recovery recommendations are simulation-only`);
+  } catch(error) {
+    addLog('Scan error: '+error.message);
+  }
+  if(resetTimer) restartTimer();
 }
 function renderBanner(anomaly,score){
   const env=document.getElementById('env-select').value;
@@ -284,7 +298,7 @@ function renderBanner(anomaly,score){
   if(anomaly){b.style.background='#2a0a0a';b.style.borderColor='#ef4444';bi.style.background='#ef4444';bt.style.color='#ef4444';bt.textContent='Anomaly Detected';bs.textContent=`${env} environment — healing initiated`;document.getElementById('status-label').textContent='Alert Active';document.getElementById('pulse-dot').style.background='#ef4444';}
   else{b.style.background='#0f1e13';b.style.borderColor='#22c55e';bi.style.background='#22c55e';bt.style.color='#22c55e';bt.textContent='System Normal';bs.textContent='All metrics within safe range';document.getElementById('status-label').textContent='System Online';document.getElementById('pulse-dot').style.background='#22c55e';}
 }
-function autoScan(){const m=getMetrics(currentScenario),anomaly=isAnomaly(m),score=anomalyScore(m);renderMetricCards(m,anomaly);renderXAI(m,anomaly,score);renderActions(m,anomaly);renderBanner(anomaly,score);}
+function autoScan(){runScenario(currentScenario,false);}
 function restartTimer(){if(scanTimer)clearInterval(scanTimer);const iv=parseInt(document.getElementById('interval-select').value)||5000;scanTimer=setInterval(autoScan,iv);}
 document.getElementById('cpu-thresh').addEventListener('input',function(){document.getElementById('cpu-thresh-val').textContent=this.value+'%';});
 document.getElementById('mem-thresh').addEventListener('input',function(){document.getElementById('mem-thresh-val').textContent=this.value+'%';});
@@ -310,30 +324,36 @@ def index():
 
 @app.route("/api/scan")
 def api_scan():
-    """
-    Optional JSON API: server-side ML prediction via Isolation Forest.
-    The JS dashboard is fully standalone, but this endpoint can be
-    consumed for ML-backed results if desired.
-    """
-    anomaly_type = random.choice(["cpu_spike", "memory_leak", "disk_full", "combined", None])
-    metrics = simulate_anomaly(anomaly_type) if anomaly_type else simulate_normal()
+    """Run the selected synthetic scenario through the server-side ML pipeline."""
+    scenario_map = {
+        "normal": None,
+        "cpu": "cpu_spike",
+        "memory": "memory_leak",
+        "disk": "disk_full",
+        "network": "network_issue",
+        "combined": "combined",
+    }
+    scenario = request.args.get("scenario", "normal")
+    if scenario not in scenario_map:
+        return jsonify({"error": "Unsupported scenario."}), 400
 
+    metrics = simulate_normal() if scenario_map[scenario] is None else simulate_anomaly(scenario_map[scenario])
     label, score, _ = predict(model, metrics)
     xai_report = explain(metrics, label, score)
+    actions = select_recovery_actions(metrics, label)
 
-    old_stdout = sys.stdout
-    sys.stdout = buffer = io.StringIO()
-    decide_and_heal(metrics, label, xai_report)
-    sys.stdout = old_stdout
-
+    # The dashboard displays latency as a supplemental synthetic demo metric;
+    # it is not part of the five-feature Isolation Forest input.
+    metrics["latency_ms"] = 25.0 if scenario in {"normal", "cpu"} else (220.0 if scenario == "network" else 45.0)
     return jsonify({
+        "scenario": scenario,
         "metrics": metrics,
         "label": label,
         "score": score,
         "explanation": xai_report,
-        "actions": buffer.getvalue(),
+        "actions": actions,
+        "recovery_mode": "simulation_only",
     })
-
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000)
