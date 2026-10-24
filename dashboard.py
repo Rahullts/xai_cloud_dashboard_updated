@@ -457,7 +457,7 @@ body {
   <div class="nav-sep"></div>
   <div class="nav-title">Explainable AI-Driven Autonomous Self-Healing Cloud Management Platform</div>
   <div class="nav-right">
-    <div class="nav-sys"><span class="sys-dot"></span>Operational</div>
+    <div class="nav-sys"><span class="sys-dot"></span>Simulation Lab &middot; Synthetic Telemetry</div>
     <div class="nav-model" id="nav-model-lbl">LR &middot; Seed&nbsp;42 &middot; 45 Features</div>
     <div class="nav-sep"></div>
     <div id="nav-risk-badge">—</div>
@@ -832,7 +832,14 @@ const S = {
   HMAX: 22,
   events: [],
   EMAX: 50,
-  lastHeal: null,
+  lastHealId: null,
+
+  // Persistent components state for the active scenario session
+  latestValidPrediction: null,
+  latestXAI: null,
+  latestRC: null,
+  latestDecision: null,
+  latestHealing: null,
 };
 
 const MCFG = [
@@ -865,6 +872,12 @@ function pickSim(el) {
 function runSim() {
   Object.keys(S.hBuf).forEach(k=>S.hBuf[k]=[]);
   S.lastHeal = null;
+  S.lastHealId = null;
+  S.latestValidPrediction = null;
+  S.latestXAI = null;
+  S.latestRC = null;
+  S.latestDecision = null;
+  S.latestHealing = null;
   const nm = document.querySelector('.sim-card.sel .sc-name')?.textContent || S.scenario;
   $('sim-active-name').textContent = nm;
   addEv('info','SIMULATION',`Scenario activated: ${nm}`);
@@ -1071,20 +1084,21 @@ function renderTemporal() {
 // ================================================================
 function renderXAI(xai) {
   const el=$('xai-content'); if(!el) return;
-  if(!xai||!xai.top_features||!xai.top_features.length){
+  const data = (xai && xai.top_features && xai.top_features.length) ? xai : S.latestXAI;
+  if(!data || !data.top_features || !data.top_features.length){
     el.innerHTML=`<div class="empty-state"><div class="empty-state-icon">◌</div><div class="empty-state-title">Awaiting Prediction</div><div class="empty-state-sub">XAI contributions appear once a live prediction is generated.</div></div>`;
     return;
   }
-  const maxA=Math.max(...xai.top_features.map(f=>f.abs_contribution));
-  const nPos=xai.top_features.filter(f=>f.direction==='positive').length;
-  const nNeg=xai.top_features.filter(f=>f.direction==='negative').length;
+  const maxA=Math.max(...data.top_features.map(f=>f.abs_contribution));
+  const nPos=data.top_features.filter(f=>f.direction==='positive').length;
+  const nNeg=data.top_features.filter(f=>f.direction==='negative').length;
   let interp='Evidence shows a moderate mix of risk-increasing and risk-reducing factors.';
   if(nPos>=4) interp='Multiple features are actively increasing failure probability. The model sees strong risk signals.';
   else if(nNeg>=4) interp='Most contributing features are suppressing failure probability. System trajectory appears stable from the model\'s perspective.';
   else if(nPos>=3) interp='More features push toward failure than away. Elevated caution is warranted.';
 
   let h=`<div class="xai-intro">${interp}</div>`;
-  xai.top_features.forEach((f,i)=>{
+  data.top_features.forEach((f,i)=>{
     const isP=f.direction==='positive';
     const col=isP?'#ef4444':'#3b82f6';
     const cbg=isP?'rgba(239,68,68,.1)':'rgba(59,130,246,.1)';
@@ -1109,17 +1123,18 @@ function renderXAI(xai) {
 // ================================================================
 function renderRC(rc) {
   const el=$('rc-content'); if(!el) return;
-  if(!rc||rc.category==='N/A'){
+  const data = (rc && rc.category && rc.category !== 'N/A') ? rc : S.latestRC;
+  if(!data || data.category==='N/A'){
     el.innerHTML=`<div class="empty-state"><div class="empty-state-icon">○</div><div class="empty-state-title">No Active Incident</div><div class="empty-state-sub">Root-cause inference appears once a prediction is live.</div></div>`;
     return;
   }
   const catCol={'CPU Spike':'#f97316','Memory Leak':'#3b82f6','Disk Exhaustion':'#f59e0b','Network Degradation':'#a78bfa','Combined Failure':'#ef4444','Unknown / Mixed':'#424d65'};
-  const col=catCol[rc.category]||'#f59e0b';
+  const col=catCol[data.category]||'#f59e0b';
   const evCol={CPU:'#f97316',Memory:'#3b82f6',Disk:'#f59e0b',Network:'#a78bfa'};
-  const maxE=rc.evidence_scores?Math.max(...Object.values(rc.evidence_scores)):1;
+  const maxE=data.evidence_scores?Math.max(...Object.values(data.evidence_scores)):1;
   let evH='';
-  if(rc.evidence_scores) {
-    Object.entries(rc.evidence_scores).forEach(([k,v])=>{
+  if(data.evidence_scores) {
+    Object.entries(data.evidence_scores).forEach(([k,v])=>{
       const w=maxE>0?((v/maxE)*100).toFixed(1):0;
       const ec=evCol[k]||'#424d65';
       const str=v>0.4?'Strong evidence':(v>0.2?'Moderate evidence':'Weak evidence');
@@ -1132,13 +1147,13 @@ function renderRC(rc) {
   el.innerHTML=`<div class="rc-layout">
     <div>
       <div class="label" style="margin-bottom:8px;">Inferred Category</div>
-      <div class="rc-cat-name" style="color:${col}">${rc.category.toUpperCase()}</div>
+      <div class="rc-cat-name" style="color:${col}">${data.category.toUpperCase()}</div>
       <div class="rc-cat-note">Evidence-based model interpretation of XAI attributions. Does not establish mechanical causality.</div>
     </div>
     <div>
       <div class="label" style="margin-bottom:12px;">Evidence Breakdown</div>
       ${evH}
-      ${rc.explanation_text?`<div class="rc-explain">${rc.explanation_text}</div>`:''}
+      ${data.explanation_text?`<div class="rc-explain">${data.explanation_text}</div>`:''}
     </div>
   </div>`;
 }
@@ -1148,10 +1163,12 @@ function renderRC(rc) {
 // ================================================================
 function renderDecision(dec, heal) {
   const el=$('dec-content'); if(!el) return;
-  const healed=(heal.status==='Executed');
+  const h = (heal && heal.status === 'Executed') ? heal : S.latestHealing;
+  const d = (dec && dec.recommended_action && !dec.recommended_action.includes('Waiting')) ? dec : (S.latestDecision || dec || {});
+  const healed = (h && h.status === 'Executed');
   if(!healed){
     el.innerHTML=`<div class="dec-grid">
-      <div><div class="dec-field-label">Recommended Recovery</div><div class="dec-field-val">${dec.recommended_action||'—'}</div><div class="dec-reason">${dec.reason||''}</div></div>
+      <div><div class="dec-field-label">Recommended Recovery</div><div class="dec-field-val">${d.recommended_action||'Monitoring telemetry'}</div><div class="dec-reason">${d.reason||'Risk level within acceptable baseline.'}</div></div>
       <div class="dec-vdiv"></div>
       <div><div class="dec-field-label">Engine Status</div><div class="dec-field-val" style="color:var(--tx2)">Monitoring — below action threshold</div><div style="margin-top:10px;"><span class="chip" style="color:var(--tx3);border-color:var(--br);background:var(--s2);">IDLE</span></div></div>
     </div>`;
@@ -1160,15 +1177,16 @@ function renderDecision(dec, heal) {
   el.innerHTML=`<div class="dec-grid">
     <div>
       <div class="dec-field-label">Detected Condition</div>
-      <div class="dec-field-val">${dec.recommended_action||'—'}</div>
-      <div class="dec-reason">${dec.reason||''}</div>
+      <div class="dec-field-val">${d.recommended_action||h.action||'—'}</div>
+      <div class="dec-reason">${d.reason||'Automated policy triggered by risk threshold.'}</div>
     </div>
     <div class="dec-vdiv"></div>
     <div>
       <div class="dec-field-label">Simulated Recovery Action</div>
-      <div class="dec-field-val" style="color:var(--amber)">${heal.action||'—'}</div>
+      <div class="dec-field-val" style="color:var(--amber)">${h.action||'—'}</div>
       <div style="display:flex;gap:7px;margin-top:10px;flex-wrap:wrap;">
         <span class="chip" style="color:var(--amber);border-color:rgba(245,158,11,.35);background:rgba(245,158,11,.08);">SIMULATED ACTION</span>
+        <span class="chip" style="color:var(--green);border-color:rgba(34,197,94,.35);background:rgba(34,197,94,.08);">EXECUTED</span>
         <span class="chip" style="color:var(--tx3);border-color:var(--br);background:var(--s2);">NOT PRODUCTION</span>
       </div>
     </div>
@@ -1180,11 +1198,12 @@ function renderDecision(dec, heal) {
 // ================================================================
 function renderVerif(heal) {
   const el=$('ver-content'); if(!el) return;
-  if(heal.status!=='Executed'||!heal.evidence){
+  const h = (heal && heal.status === 'Executed' && heal.evidence) ? heal : S.latestHealing;
+  if(!h || h.status!=='Executed' || !h.evidence){
     el.innerHTML=`<div class="empty-state"><div class="empty-state-icon">○</div><div class="empty-state-title">No Recovery Executed</div><div class="empty-state-sub">Verification runs after HIGH or CRITICAL risk triggers healing.</div></div>`;
     return;
   }
-  const bef=heal.evidence.before, aft=heal.evidence.after, ver=heal.verification;
+  const bef=h.evidence.before, aft=h.evidence.after, ver=h.verification;
   const vm={RECOVERED:{col:'#22c55e',bg:'rgba(34,197,94,.08)',lbl:'RECOVERED'},NOT_RECOVERED:{col:'#ef4444',bg:'rgba(239,68,68,.08)',lbl:'NOT RECOVERED'},INCONCLUSIVE:{col:'#f59e0b',bg:'rgba(245,158,11,.08)',lbl:'INCONCLUSIVE'}};
   const vs=vm[ver]||{col:'#424d65',bg:'transparent',lbl:ver||'—'};
   const delta=bef&&aft?(bef.risk_score-aft.risk_score):null;
@@ -1202,7 +1221,7 @@ function renderVerif(heal) {
         <div class="ver-status-txt">${vs.lbl}</div>
       </div>
       ${delta!==null?`<div class="ver-delta" style="color:${improved?'#22c55e':'#ef4444'}">${improved?'▼':'▲'} ${(Math.abs(delta)*100).toFixed(1)}% score change</div>`:''}
-      <div class="ver-note">Re-prediction on simulated normal telemetry</div>
+      <div class="ver-note">Re-prediction on simulated telemetry</div>
     </div>
     <div class="ver-side" style="border-color:${rcol(aft?.risk_level)}44">
       <div class="ver-side-lbl">After Recovery</div>
@@ -1218,15 +1237,34 @@ function renderVerif(heal) {
 // MAIN POLL
 // ================================================================
 function pollBackend() {
-  setPipe(0);
   fetch(`/api/scan?scenario=${S.scenario}`)
     .then(r=>r.json())
     .then(d=>{
       if(d.error){ addEv('alert','API ERROR',d.message); return; }
       const pred=d.prediction, rl=pred.risk_level, isW=pred.status==='WARMING_UP';
 
-      if(isW) setPipe(0);
-      else if(d.healing?.status==='Executed') setPipe(7);
+      // Update persistent session state when valid data is present
+      if(!isW && pred){
+        S.latestValidPrediction = pred;
+      }
+      if(d.xai && d.xai.top_features && d.xai.top_features.length > 0){
+        S.latestXAI = d.xai;
+      }
+      if(d.root_cause && d.root_cause.category && d.root_cause.category !== 'N/A'){
+        S.latestRC = d.root_cause;
+      }
+      if(d.decision && d.decision.recommended_action && !d.decision.recommended_action.includes('Waiting')){
+        S.latestDecision = d.decision;
+      }
+      if(d.healing && d.healing.status === 'Executed'){
+        S.latestHealing = d.healing;
+      } else if(d.last_healing && d.last_healing.status === 'Executed'){
+        S.latestHealing = d.last_healing;
+      }
+
+      // Stepper pipeline status
+      if(isW && !S.latestHealing) setPipe(0);
+      else if((d.healing?.status==='Executed') || (S.latestHealing?.status==='Executed')) setPipe(7);
       else if(rl==='HIGH'||rl==='CRITICAL') setPipe(5);
       else setPipe(3);
 
@@ -1234,20 +1272,23 @@ function pollBackend() {
       renderMetrics(d.telemetry);
       renderTemporal();
 
-      if(!isW){
-        renderXAI(d.xai);
-        renderRC(d.root_cause);
-        renderDecision(d.decision, d.healing);
-        renderVerif(d.healing);
+      // Render cards with fallback to persistent session state
+      renderXAI(d.xai);
+      renderRC(d.root_cause);
+      renderDecision(d.decision, d.healing);
+      renderVerif(d.healing);
 
-        if(d.healing?.status==='Executed'&&d.healing.status!==S.lastHeal){
-          addEv('action','HEALING',`Simulated: ${d.healing.action}`);
-          addEv(d.healing.verification==='RECOVERED'?'success':'warning','VERIFICATION',
-            `Result: ${d.healing.verification} — Before: ${d.healing.evidence?.before?.risk_level} → After: ${d.healing.evidence?.after?.risk_level}`);
-          S.lastHeal=d.healing.status;
+      // Timeline event logging for healing (log once per healing execution)
+      const curHeal = (d.healing && d.healing.status === 'Executed') ? d.healing : null;
+      if(curHeal){
+        const healId = `${d.telemetry?.timestep}_${curHeal.action}_${curHeal.verification}`;
+        if(healId !== S.lastHealId){
+          S.lastHealId = healId;
+          addEv('action','HEALING',`Simulated: ${curHeal.action}`);
+          const verType = curHeal.verification === 'RECOVERED' ? 'success' : (curHeal.verification === 'INCONCLUSIVE' ? 'warning' : 'alert');
+          addEv(verType,'VERIFICATION',
+            `Result: ${curHeal.verification} — Before: ${curHeal.evidence?.before?.risk_level} (${curHeal.evidence?.before?.risk_score?.toFixed(4)}) → After: ${curHeal.evidence?.after?.risk_level} (${curHeal.evidence?.after?.risk_score?.toFixed(4)})`);
         }
-      } else {
-        renderXAI(null); renderRC(null); renderDecision({recommended_action:'Waiting…',reason:'Insufficient history'},{status:'Skipped'}); renderVerif({status:'Skipped'});
       }
     })
     .catch(err=>addEv('alert','FETCH ERROR',err.toString()));
@@ -1266,12 +1307,21 @@ setInterval(pollBackend, 1500);
 </html>"""
 
 
+@app.route("/healthz")
+@app.route("/health")
+def health_check():
+    """Health check endpoint for cloud load balancers and deployment monitoring."""
+    return {"status": "ok", "service": "xai-cloud-platform", "mode": "simulation", "version": "1.0.0"}, 200
+
+
 @app.route("/")
 def index():
     """Serve the XAI Cloud Operations Platform."""
     return render_template_string(HTML)
 
 
+# Pre-initialize model upon module loading so Gunicorn workers are ready immediately
+init_api_model()
+
 if __name__ == "__main__":
-    init_api_model()
-    app.run(host="0.0.0.0", port=config.PORT, debug=False)
+    app.run(host=config.HOST, port=config.PORT, debug=config.DEBUG)

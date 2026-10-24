@@ -12,6 +12,27 @@
 % Allow clean line breaks in URLs
 \def\UrlBreaks{\do\/\do-}
 
+% IEEEtran float and caption spacing adjustments
+\setlength{\floatsep}{4pt plus 1pt minus 1pt}
+\setlength{\textfloatsep}{5pt plus 1pt minus 1pt}
+\setlength{\intextsep}{4pt plus 1pt minus 1pt}
+\setlength{\dblfloatsep}{4pt plus 1pt minus 1pt}
+\setlength{\dbltextfloatsep}{5pt plus 1pt minus 1pt}
+\setlength{\abovecaptionskip}{2.5pt plus 1pt minus 1pt}
+\setlength{\belowcaptionskip}{1pt plus 1pt minus 1pt}
+\setlength{\abovedisplayskip}{2.5pt plus 1pt minus 1pt}
+\setlength{\belowdisplayskip}{2.5pt plus 1pt minus 1pt}
+\renewcommand{\arraystretch}{0.93}
+
+\setcounter{topnumber}{4}
+\setcounter{bottomnumber}{4}
+\setcounter{totalnumber}{8}
+\setcounter{dbltopnumber}{4}
+\renewcommand{\topfraction}{0.95}
+\renewcommand{\bottomfraction}{0.95}
+\renewcommand{\textfraction}{0.05}
+\renewcommand{\floatpagefraction}{0.85}
+
 \begin{document}
 
 \title{Explainable AI-Driven Autonomous Self-Healing Cloud Management Platform}
@@ -21,7 +42,14 @@
 \textit{School of Computer Science and Technology} \\
 \textit{Karunya Institute of Technology and Science}\\
 Coimbatore, Tamil Nadu, India \\
-rahult23@karunya.edu.in}}
+rahult23@karunya.edu.in}
+\and
+\IEEEauthorblockN{Dr. S. Shirly}
+\IEEEauthorblockA{\textit{Department of Computer Science and Engineering} \\
+\textit{School of Computer Science and Technology} \\
+\textit{Karunya Institute of Technology and Science}\\
+Coimbatore, Tamil Nadu, India \\
+shirly@karunya.edu.in}}
 
 \maketitle
 
@@ -67,35 +95,15 @@ Closed-loop remediation has progressed from static thresholds toward adaptive co
 
 \subsection{Research Gap and Open Challenges}
 
-The review in Section II reveals that the cloud management literature addresses individual pipeline stages well but rarely evaluates them as a unified end-to-end workflow. Specifically:
-\begin{enumerate}
-\item Detection methods do not explain which features drove the alert.
-\item XAI methods are applied to detection models but not connected to recovery actions.
-\item Self-healing systems do not use temporal prediction and do not verify recovery with the same model.
-\item AIOps literature repeatedly identifies system integration as an open challenge, yet experimental evaluations of full operational loops remain scarce.
-\end{enumerate}
+The review in Section II reveals that the cloud management literature addresses individual pipeline stages well but rarely evaluates them as a unified end-to-end workflow: (1)~detection methods do not explain which features drove the alert; (2)~XAI methods are applied to detection models but not connected to recovery actions; (3)~self-healing systems do not use temporal prediction and do not verify recovery with the same model; and (4)~AIOps literature repeatedly identifies system integration as an open challenge, yet experimental evaluations of full operational loops remain scarce.
 
 This work addresses these gaps by implementing and evaluating an integrated prototype that connects telemetry ingestion, temporal prediction, deterministic XAI attribution, failure-category inference, decision logic, simulated recovery, and model-based verification in a single system. While this system does not claim superiority over deep learning anomaly detectors, it provides a comprehensive end-to-end framework demonstrating a complete, interpretable, reproducible workflow in a research prototype setting.
 
 \subsection{Research Questions and Contributions}
 
-The specific research questions addressed are:
-\begin{itemize}
-\item \textbf{RQ1:} How effectively can machine learning-based anomaly detection identify cloud resource failures across diverse multi-scenario synthetic telemetry?
-\item \textbf{RQ2:} Can temporal rolling features improve early warning of gradual failures compared with snapshot threshold monitoring?
-\item \textbf{RQ3:} Can model-coefficient attribution identify which temporal telemetry patterns most influence each failure-risk prediction?
-\item \textbf{RQ4:} Can likely-failure-category inference and rule-based decision logic translate prediction outputs to appropriate recovery action selection?
-\item \textbf{RQ5:} Can post-recovery re-evaluation using the same predictive model provide a meaningful verification signal within an integrated self-healing workflow?
-\end{itemize}
+The specific research questions addressed are: \textbf{RQ1:} How effectively can machine learning-based anomaly detection identify cloud resource failures across diverse multi-scenario synthetic telemetry? \textbf{RQ2:} Can temporal rolling features improve early warning of gradual failures compared with snapshot threshold monitoring? \textbf{RQ3:} Can model-coefficient attribution identify which temporal telemetry patterns most influence each failure-risk prediction? \textbf{RQ4:} Can likely-failure-category inference and rule-based decision logic translate prediction outputs to appropriate recovery action selection? \textbf{RQ5:} Can post-recovery re-evaluation using the same predictive model provide a meaningful verification signal within an integrated self-healing workflow?
 
-The main contributions of this work are:
-\begin{enumerate}
-\item An end-to-end integrated prototype connecting all ten cloud management stages in a single callable API.
-\item A leak-free 45-feature temporal feature engineering layer using 10-step sliding windows.
-\item A comparative predictive evaluation of five models across five random seeds with strictly sequence-isolated splits.
-\item A deterministic Logistic Regression coefficient attribution layer for XAI without approximation methods.
-\item A post-recovery verification mechanism that re-evaluates recovery using the same trained model.
-\end{enumerate}
+The main contributions of this work are: (1)~an end-to-end integrated prototype connecting all ten cloud management stages in a single callable API; (2)~a leak-free 45-feature temporal feature engineering layer using 10-step sliding windows; (3)~a comparative predictive evaluation of five models across five random seeds with strictly sequence-isolated splits; (4)~a deterministic Logistic Regression coefficient attribution layer for XAI without approximation methods; and (5)~a post-recovery verification mechanism that re-evaluates recovery using the same trained model.
 
 \section{Proposed System Architecture and Methodology}
 
@@ -103,24 +111,12 @@ The proposed methodology connects telemetry ingestion, anomaly detection, tempor
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.92\columnwidth]{figures/fig1_system_architecture.pdf}
+\includegraphics[width=0.68\columnwidth]{figures/fig1_system_architecture.pdf}
 \caption{Explainable AI-driven cloud management system architecture (ten-stage pipeline).}
 \label{fig:arch}
 \end{figure}
 
-The proposed platform comprises ten processing stages arranged as a sequential pipeline:
-\begin{enumerate}
-\item \textbf{Telemetry Ingestion:} Synthetic generation of multi-metric sequences across CPU, memory, disk, and network interfaces.
-\item \textbf{Anomaly Detection:} Snapshot point-in-time detection using an unsupervised Isolation Forest model.
-\item \textbf{Temporal Buffer Management:} 10-step sliding window aggregation to accumulate historical temporal context.
-\item \textbf{Temporal Feature Extraction:} Derivation of 45 leak-free statistical and regression features across trailing windows.
-\item \textbf{Failure Risk Prediction:} Sequence-level classification using Logistic Regression to predict future failure probability.
-\item \textbf{XAI Attribution:} Deterministic feature contribution computation via exact model coefficients and normalized values.
-\item \textbf{Likely Failure Category:} Evidence score aggregation across resource domains (CPU, Memory, Disk, Network).
-\item \textbf{Autonomous Decision Logic:} Rule-based selection mapping inferred failure category to targeted remediation.
-\item \textbf{Simulated Recovery:} Mock execution of recovery logic (string selection representing remediation action).
-\item \textbf{Post-Recovery Verification:} Model-based re-evaluation of simulated recovered telemetry using the same trained classifier.
-\end{enumerate}
+The proposed platform comprises ten processing stages arranged as a sequential pipeline: (1)~\textbf{Telemetry Ingestion:} synthetic generation of multi-metric sequences across CPU, memory, disk, and network interfaces; (2)~\textbf{Anomaly Detection:} snapshot point-in-time detection using an unsupervised Isolation Forest model; (3)~\textbf{Temporal Buffer Management:} 10-step sliding window aggregation to accumulate historical temporal context; (4)~\textbf{Temporal Feature Extraction:} derivation of 45 leak-free statistical and regression features across trailing windows; (5)~\textbf{Failure Risk Prediction:} sequence-level classification using Logistic Regression to predict future failure probability; (6)~\textbf{XAI Attribution:} deterministic feature contribution computation via exact model coefficients and normalized values; (7)~\textbf{Likely Failure Category:} evidence score aggregation across resource domains (CPU, Memory, Disk, Network); (8)~\textbf{Autonomous Decision Logic:} rule-based selection mapping inferred failure category to targeted remediation; (9)~\textbf{Simulated Recovery:} mock execution of recovery logic (string selection representing remediation action); and (10)~\textbf{Post-Recovery Verification:} model-based re-evaluation of simulated recovered telemetry using the same trained classifier.
 
 \subsection{Temporal Feature Engineering}
 
@@ -128,27 +124,18 @@ A leak-free temporal feature set comprising 45 features is constructed from each
 
 \subsection{Predictive Modeling and Target Formulation}
 
-Logistic Regression was selected for the integrated system with hyperparameters: regularisation strength $C = 1.0$, maximum iterations $\text{max\_iter} = 2000$, random seed 42, and balanced class weights (\texttt{class\_weight='balanced'}). The prediction target is strictly forward-looking and binary: a label of 1 denotes that an active failure occurs within the subsequent 10 future timesteps ($t+1 \le t' \le t+10$), strictly excluding the current observation at timestep $t$ to avoid target circularity, and 0 otherwise.
-
-The model is trained at server initialisation on the Phase 3C seed-42 training split (4,920 rows from 120 sequences). The fitted scaler and model are used for all live inference. Logistic Regression is selected over Random Forest and Gradient Boosting not because it achieves the highest aggregate performance---all three achieve similar F1-scores and ROC-AUC values within measurement noise---but because its coefficient-based attribution is mathematically exact and requires no post-hoc approximation method.
+Logistic Regression was selected for the integrated system with hyperparameters: regularisation strength $C = 1.0$, maximum iterations $\text{max\_iter} = 2000$, random seed 42, and balanced class weights (\texttt{class\_weight='balanced'}). The prediction target is strictly forward-looking and binary: a label of 1 denotes that an active failure occurs within the subsequent 10 future timesteps ($t+1 \le t' \le t+10$), strictly excluding the current observation at timestep $t$ to avoid target circularity, and 0 otherwise. The model is trained at server initialisation on the Phase 3C seed-42 training split (4,920 rows from 120 sequences). The fitted scaler and model are used for all live inference. Logistic Regression is selected over Random Forest and Gradient Boosting not because it achieves the highest aggregate performance---all three achieve similar F1-scores and ROC-AUC values within measurement noise---but because its coefficient-based attribution is mathematically exact and requires no post-hoc approximation method.
 
 \subsection{Explainable AI and Failure Categorization}
 
-\subsubsection{Deterministic XAI Attribution}
-For each live prediction, the linear contribution $c_i$ of temporal feature $i$ is computed deterministically as:
+\textit{1) Deterministic XAI Attribution:} For each live prediction, the linear contribution $c_i$ of temporal feature $i$ is computed deterministically as:
 \begin{equation}
 c_i = z_i \cdot w_i = \left(\frac{x_i - \mu_i}{\sigma_i}\right) w_i
 \label{eq:attribution}
 \end{equation}
 where $z_i$ denotes the $z$-score standardized feature value derived using the training-set mean $\mu_i$ and standard deviation $\sigma_i$, and $w_i$ represents the learned Logistic Regression coefficient. The score $c_i$ quantifies the signed contribution of feature $i$ to the predicted failure log-odds. A positive value ($c_i > 0$) increases the estimated failure probability toward the high-risk threshold, whereas a negative value ($c_i < 0$) indicates evidence toward nominal operation. For operational transparency, the top five features ranked by absolute contribution $|c_i|$ are reported for each inference cycle.
 
-\subsubsection{Likely Failure Category Inference}
-Evidence scores across four primary resource domains (CPU, Memory, Disk, and Network) are obtained by summing the absolute attribution values of corresponding features:
-\begin{equation}
-E_r = \sum_{i \in \mathcal{F}_r} |c_i|
-\label{eq:evidence}
-\end{equation}
-where $\mathcal{F}_r$ denotes the set of temporal features mapped to resource domain $r \in \{\text{CPU}, \text{Memory}, \text{Disk}, \text{Network}\}$. The domain with the highest aggregate evidence $\arg\max_r E_r$ is inferred as the likely failure category. This heuristic attribution summarizes model focus without asserting counterfactual causal proof.
+\textit{2) Likely Failure Category Inference:} Evidence scores across four primary resource domains (CPU, Memory, Disk, and Network) are obtained by summing the absolute attribution values of corresponding features: $E_r = \sum_{i \in \mathcal{F}_r} |c_i|$, where $\mathcal{F}_r$ denotes the set of temporal features mapped to resource domain $r \in \{\text{CPU}, \text{Memory}, \text{Disk}, \text{Network}\}$. The domain with the highest aggregate evidence $\arg\max_r E_r$ is inferred as the likely failure category. This heuristic attribution summarizes model focus without asserting counterfactual causal proof.
 
 \subsection{Decision and Simulated Self-Healing}
 
@@ -158,6 +145,7 @@ When predicted failure risk reaches the actionable threshold, the autonomous dec
 \centering
 \caption{LIKELY FAILURE CATEGORY TO SIMULATED RECOVERY ACTION MAPPING}
 \label{tab:category_actions}
+\resizebox{\columnwidth}{!}{
 \begin{tabular}{ll}
 \toprule
 \textbf{Likely Failure Category} & \textbf{Simulated Recovery Action} \\
@@ -169,26 +157,12 @@ Network Degradation & Check / restart network service / reroute \\
 Combined Failure & Controlled recovery sequence + operator alert \\
 \bottomrule
 \end{tabular}
+}
 \end{table}
 
 \subsection{Post-Healing Verification Protocol}
 
-When predicted failure risk reaches the HIGH or CRITICAL threshold ($\ge 0.50$):
-\begin{enumerate}
-\item Pre-healing risk (score, level, label) is recorded.
-\item The decision engine selects a recovery action (simulated string selection, not executed via cloud API).
-\item A 10-step synthetic stable normal telemetry sequence is generated as an algorithmic proxy for the recovered state.
-\item The same trained Logistic Regression model evaluates this sequence.
-\item Post-healing risk (score, level, label) is recorded.
-\item Verification verdict determination:
-\begin{itemize}
-\item \textbf{RECOVERED}: Post-healing risk level is evaluated as LOW ($\le 0.25$).
-\item \textbf{NOT\_RECOVERED}: Post-healing risk level remains HIGH or CRITICAL ($\ge 0.50$).
-\item \textbf{INCONCLUSIVE}: Post-healing risk level is evaluated as MEDIUM ($0.25 < \text{risk} < 0.50$), indicating partial remediation without achieving full baseline stability.
-\end{itemize}
-\end{enumerate}
-
-The temporal buffer is cleared after healing so that the subsequent polling cycle re-enters the \texttt{WARMING\_UP} state.
+When predicted failure risk reaches the HIGH or CRITICAL threshold ($\ge 0.50$): (1)~pre-healing risk (score, level, label) is recorded; (2)~the decision engine selects a recovery action (simulated string selection, not executed via cloud API); (3)~a 10-step synthetic stable normal telemetry sequence is generated as an algorithmic proxy for the recovered state; (4)~the same trained Logistic Regression model evaluates this sequence; (5)~post-healing risk (score, level, label) is recorded; and (6)~the verification verdict is determined: \textbf{RECOVERED} if post-healing risk is LOW ($\le 0.25$), \textbf{NOT\_RECOVERED} if risk remains HIGH or CRITICAL ($\ge 0.50$), or \textbf{INCONCLUSIVE} if risk is MEDIUM ($0.25 < \text{risk} < 0.50$), indicating partial remediation without achieving full baseline stability. The temporal buffer is cleared after healing so that the subsequent polling cycle re-enters the \texttt{WARMING\_UP} state.
 
 \section{Experimental Setup}
 
@@ -218,18 +192,11 @@ Sequence-level splitting ensures no temporal window from a test sequence is visi
 
 \subsection{Anomaly Detection Evaluation (Phase 2)}
 
-Isolation Forest is evaluated on snapshot telemetry. Baselines include a fixed-threshold classifier (alarm if any metric exceeds 80\%) evaluated on identical data.
+Isolation Forest is evaluated on snapshot telemetry for reactive point-in-time anomaly detection. Baselines include a fixed-threshold classifier (alarm if CPU, memory, or disk exceeds 85\%, or network rate exceeds 40\,KB/s) evaluated against instantaneous failure labels on identical snapshot test data.
 
 \subsection{Temporal Predictive Evaluation (Phase 3)}
 
-Five models are compared across five random seeds \{42, 123, 456, 789, 2026\}:
-\begin{enumerate}
-\item Majority-class baseline
-\item Current-value threshold baseline
-\item Logistic Regression ($C=1.0$, $\text{max\_iter}=2000$, \texttt{class\_weight='balanced'})
-\item Random Forest ($n_{\text{estimators}}=100$, \texttt{class\_weight='balanced'})
-\item Gradient Boosting ($n_{\text{estimators}}=100$)
-\end{enumerate}
+Five models are compared across five random seeds \{42, 123, 456, 789, 2026\}: (1)~majority-class baseline; (2)~current-value threshold baseline (evaluating whether instantaneous metric breaches of 85\% forecast failure within the forward-looking 10-step horizon); (3)~Logistic Regression ($C=1.0$, $\text{max\_iter}=2000$, \texttt{class\_weight='balanced'}); (4)~Random Forest ($n_{\text{estimators}}=100$, \texttt{class\_weight='balanced'}); and (5)~Gradient Boosting ($n_{\text{estimators}}=100$).
 
 Performance metrics include accuracy, precision, recall, F1-score, Area Under the Receiver Operating Characteristic (ROC-AUC), and Precision-Recall Area Under Curve (PR-AUC).
 
@@ -262,7 +229,7 @@ Isolation Forest & 0.910 & 0.704 & 0.826 & 0.760 & 0.073 \\
 }
 \end{table}
 
-The Isolation Forest achieves substantially higher recall than the threshold baseline (0.826 vs. 0.435), correctly identifying most failure events at the cost of a 7.3\% false positive rate. The threshold baseline produces zero false positives but misses 56.5\% of failures---particularly gradual-onset scenarios where no metric exceeds 80\% until late in the failure trajectory. Per-scenario detection analysis shows that CPU spike (F1 0.823), memory leak (F1 0.870), and network degradation (F1 1.000) are detected reliably. Disk gradual exhaustion achieves an F1-score of only 0.700 at snapshot level, reflecting the slow metric accumulation rate relative to the 80\% static threshold.
+The Isolation Forest achieves substantially higher recall than the threshold baseline (0.826 vs. 0.435), correctly identifying most failure events at the cost of a 7.3\% false positive rate. The threshold baseline produces zero false positives but misses 56.5\% of failures---particularly gradual-onset scenarios where no metric exceeds the 85\% saturation threshold until late in the failure trajectory. Because the evaluation target here is instantaneous failure state, the threshold baseline captures the subset of anomalies that have reached acute saturation, achieving a recall of 0.435 and an F1-score of 0.606. Per-scenario detection analysis shows that CPU spike (F1 0.823), memory leak (F1 0.870), and network degradation (F1 1.000) are detected reliably. Disk gradual exhaustion achieves an F1-score of only 0.700 at snapshot level, reflecting the slow metric accumulation rate relative to the 85\% static threshold.
 
 \subsection{Temporal Predictive Performance (Phase 3)}
 The performance of the temporal predictive models aggregated over five independent random seeds is presented in Table~\ref{tab:model_comp} and illustrated in Fig.~\ref{fig:model_comp}.
@@ -288,14 +255,14 @@ Gradient Boosting & \textbf{0.699 $\pm$ 0.030} & 0.826 $\pm$ 0.013 & 0.852 $\pm$
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.92\columnwidth]{figures/fig4_model_comparison.pdf}
+\includegraphics[width=0.58\columnwidth]{figures/fig4_model_comparison.pdf}
 \caption{Temporal predictive model comparison across five random seeds (mean F1-score and ROC-AUC).}
 \label{fig:model_comp}
 \end{figure}
 
-All three machine learning classifiers substantially outperform both baselines. The performance differences among Logistic Regression (LR), Random Forest (RF), and Gradient Boosting (GB) are small relative to within-seed variance. Gradient Boosting attains the highest mean F1-score (0.699) and ROC-AUC (0.826) but also exhibits the largest standard deviation in recall ($\pm$0.127). Logistic Regression demonstrates the most stable performance across seeds (F1-score standard deviation $\pm$0.036). At random seed 42 specifically, LR achieves F1-score 0.727 and ROC-AUC 0.830; RF achieves F1-score 0.718 and ROC-AUC 0.819; and GB achieves F1-score 0.725 and ROC-AUC 0.812.
+All three machine learning classifiers substantially outperform both baselines. The performance differences among Logistic Regression (LR), Random Forest (RF), and Gradient Boosting (GB) remain within random-seed variance. Gradient Boosting attains the highest mean F1-score (0.699) and ROC-AUC (0.826) but also exhibits the largest standard deviation in recall ($\pm$0.127). Logistic Regression demonstrates the most stable performance across seeds (F1-score standard deviation $\pm$0.036). At random seed 42 specifically, LR achieves F1-score 0.727 and ROC-AUC 0.830; RF achieves F1-score 0.718 and ROC-AUC 0.819; and GB achieves F1-score 0.725 and ROC-AUC 0.812.
 
-\textbf{Threshold baseline analysis:} The current-value threshold baseline achieves high precision (0.997) but low recall (0.086)---it correctly identifies near-saturation events when a metric exceeds 80\%, but misses the vast majority of failure timesteps because gradual failures develop slowly below the threshold. This confirms that temporal feature-based prediction provides substantially better early-warning sensitivity.
+\textbf{Threshold baseline analysis and protocol contrast:} The threshold baseline achieves high precision ($0.997 \pm 0.006$) but low recall ($0.086 \pm 0.031$, F1 $0.156 \pm 0.054$) in Table~\ref{tab:model_comp}, contrasting with its 0.606 F1 in Table~\ref{tab:if_metrics}. This divergence reflects the evaluation protocol: Table~\ref{tab:if_metrics} evaluates reactive detection of ongoing acute saturation (where 43.5\% exceed 85\%), whereas Table~\ref{tab:model_comp} evaluates proactive 10-step forecasting ($t+1 \le t' \le t+10$). Incipient precursor signals remain sub-threshold, causing static monitoring to miss 91.4\% of early warnings and confirming the necessity of temporal features.
 
 \subsection{Per-Scenario Predictive Performance}
 Table~\ref{tab:scenario_perf} reports the breakdown of classification performance across each evaluated failure scenario for Logistic Regression on the test split.
@@ -322,13 +289,7 @@ Combined Gradual Failure & 246 & 0.820 & 0.755 & 0.786 & 56 & 27 & 40 & 123 \\
 }
 \end{table}
 
-Comparative inspection of the per-scenario classification outcomes reveals distinct operational behaviors:
-\begin{itemize}
-\item \textbf{Normal baseline profiles} produce zero true positives with moderate false positives (73 out of 205 for stable normal), reflecting the sensitivity orientation of balanced class weighting (\texttt{class\_weight='balanced'}).
-\item \textbf{CPU sudden failure} yields the lowest F1-score (0.529), confirming the inherent boundary of temporal forecasting when abrupt step-function faults produce limited precursor trajectory signals prior to onset.
-\item \textbf{Gradual failure modes} (gradual disk exhaustion, gradual memory leak, and combined failure) attain substantially higher F1-scores (0.786 to 0.864), demonstrating that rolling statistical features effectively capture accumulating degradation dynamics.
-\item \textbf{Memory gradual leak} achieves perfect precision (1.000), confirming that all positive predictions on memory-leak sequences are valid, while recall (0.649) highlights the delay in accumulating sufficient temporal variation during early trajectory timesteps.
-\end{itemize}
+Comparative inspection of per-scenario outcomes reveals distinct operational behaviors: (1)~\textbf{Normal baseline profiles} produce zero true positives with moderate false alarms (73 out of 205 for stable normal), reflecting sensitivity-oriented balanced class weighting (\texttt{class\_weight='balanced'}). (2)~\textbf{CPU sudden failure} yields the lowest F1-score (0.529), confirming the predictive boundary when abrupt faults lack precursor trajectory signals. (3)~\textbf{Gradual failure modes} (disk exhaustion, memory leak, combined failure) attain substantially higher F1-scores (0.786 to 0.864), demonstrating that rolling statistical features effectively capture accumulating degradation dynamics. (4)~\textbf{Memory gradual leak} achieves perfect precision (1.000), confirming that all positive predictions are valid, while recall (0.649) highlights the delay in accumulating sufficient temporal variation during early trajectory timesteps.
 
 \subsection{Early-Warning Performance}
 The advance warning horizon achieved across all evaluated failure sequences is detailed in Table~\ref{tab:early_warning}.
@@ -375,7 +336,7 @@ test\_15 & CPU Sudden & 0.686 & Mem 10-step avg & +0.917 & $\uparrow$ & Memory L
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.92\columnwidth]{figures/fig6_xai_contributions.pdf}
+\includegraphics[width=0.60\columnwidth]{figures/fig6_xai_contributions.pdf}
 \caption{Deterministic XAI feature contributions for a representative evaluation case (gradual disk exhaustion).}
 \label{fig:xai}
 \end{figure}
@@ -390,6 +351,7 @@ The integrated system was evaluated across all six failure scenarios. For the ne
 \centering
 \caption{POST-RECOVERY VERIFICATION EVALUATION (NETWORK DEGRADATION)}
 \label{tab:verification}
+\resizebox{\columnwidth}{!}{
 \begin{tabular}{ll}
 \toprule
 \textbf{Stage} & \textbf{Value} \\
@@ -400,11 +362,12 @@ Post-healing risk & MEDIUM (0.447) \\
 Verification verdict & INCONCLUSIVE \\
 \bottomrule
 \end{tabular}
+}
 \end{table}
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.92\columnwidth]{figures/fig7_verification.pdf}
+\includegraphics[width=0.60\columnwidth]{figures/fig7_verification.pdf}
 \caption{Closed-loop post-recovery verification flow for the network degradation scenario.}
 \label{fig:verification}
 \end{figure}
@@ -413,56 +376,28 @@ In this evaluation, the estimated failure risk decreased substantially from pre-
 
 \section{Discussion}
 
-\subsection{Temporal Features vs. Threshold Detection}
+\textit{1) Temporal Features vs. Threshold Detection:} The results confirm that temporal rolling features substantially improve early-warning performance over static threshold monitoring. While a fixed 85\% saturation threshold achieves F1 0.606 on ongoing snapshot anomalies (Table~\ref{tab:if_metrics}), its performance drops to 8.6\% recall and F1 0.156 for proactive 10-step prediction (Table~\ref{tab:model_comp}) because incipient failures remain sub-threshold until late in the sequence. In contrast, temporal Logistic Regression achieves 66.1\% recall, 0.813 ROC-AUC, and an advance lead time averaging 18.06 timesteps, demonstrating the decisive operational advantage of temporal sequence modeling over static point-in-time checks.
 
-The results confirm that temporal rolling features substantially improve early-warning performance compared with snapshot threshold monitoring. The threshold baseline achieves a mean recall of only 8.6\% across seeds because gradual failures accumulate below any fixed threshold until late in the sequence. Logistic Regression with temporal features achieves a mean recall of 66.1\% with an advance lead time averaging 18.06 timesteps. This demonstrates the operational advantage of temporal sequence modeling over instantaneous point-in-time checks.
+\textit{2) Model Selection Trade-offs:} Random Forest and Gradient Boosting achieve marginally higher mean F1-scores and ROC-AUC values than Logistic Regression, but the differences remain within random seed variance. The decision to integrate Logistic Regression is justified by interpretability: its coefficient-based attribution is mathematically exact, computationally lightweight, and requires no sampling approximations such as SHAP or LIME. This represents a deliberate, principled system-design trade-off.
 
-\subsection{Model Selection Trade-offs}
+\textit{3) XAI for Operational Context:} The coefficient attribution results indicate that variability (standard deviation) and trend (slope) features are the primary predictive drivers for gradual failure scenarios. This offers actionable diagnostic clarity: a systems operator informed that the ``CPU 5-step slope is the strongest positive contributor'' can inspect the corresponding CPU trend chart and verify the alert independently without relying on an unverified black-box approximation.
 
-Random Forest and Gradient Boosting achieve marginally higher mean F1-scores and ROC-AUC values than Logistic Regression, but the differences remain within random seed variance. The decision to integrate Logistic Regression is justified by interpretability: its coefficient-based attribution is mathematically exact, computationally lightweight, and requires no sampling approximations such as SHAP or LIME. This represents a deliberate, principled system-design trade-off.
-
-\subsection{XAI for Operational Context}
-
-The coefficient attribution results indicate that variability (standard deviation) and trend (slope) features are the primary predictive drivers for gradual failure scenarios. This offers actionable diagnostic clarity: a systems operator informed that the ``CPU 5-step slope is the strongest positive contributor'' can inspect the corresponding CPU trend chart and verify the alert independently without relying on an unverified black-box approximation.
-
-\subsection{Root-Cause Inference Limitations}
-
-The heuristic for likely failure categories reliably identifies the primary faulty resource for gradual single-resource scenarios. However, it exhibits limitations on sudden step-function failures (where temporal variation has not yet accumulated) and on combined failure modes (where attribution is distributed across multiple resource types). These failure modes are documented and consistent with the inherent constraints of sequence modeling. The system explicitly does not claim mechanistic or counterfactual causal discovery.
-
-\subsection{Post-Recovery Verification Conservatism}
-
-The INCONCLUSIVE verdict for the network degradation scenario represents an honest, conservative outcome. An operational platform that claimed RECOVERED whenever failure risk decreased by any non-zero margin would introduce hazardous false confidence. The three-state verification logic (RECOVERED, NOT\_RECOVERED, INCONCLUSIVE) enforces an essential standard of operational caution, preventing partial mitigations from being misclassified as complete recoveries.
+\textit{4) Attribution Boundaries and Verification Honesty:} The heuristic for likely failure categories reliably identifies the primary faulty resource for gradual single-resource scenarios. However, it exhibits limitations on sudden step-function failures (where temporal variation has not yet accumulated) and on combined failure modes (where attribution is distributed across multiple resource types). These failure modes are documented and consistent with the inherent constraints of sequence modeling; the system explicitly does not claim mechanistic or counterfactual causal discovery. Furthermore, the INCONCLUSIVE verdict for the network degradation scenario represents an honest, conservative outcome. An operational platform that claimed RECOVERED whenever failure risk decreased by any non-zero margin would introduce hazardous false confidence. The three-state verification logic (RECOVERED, NOT\_RECOVERED, INCONCLUSIVE) enforces an essential standard of operational caution, preventing partial mitigations from being misclassified as complete recoveries.
 
 \section{System Limitations and Threats to Validity}
 
-\begin{enumerate}
-\item \textbf{Synthetic telemetry:} All data is generated by parameterised scenario profiles rather than real production systems. Generalisation to physical multi-tenant cloud infrastructure remains unvalidated.
-\item \textbf{Simulated recovery:} Remediation actions are logged string selections dispatched by rule-based logic, not executable hypervisor or cloud provider API calls. No real cloud resource reallocation occurs.
-\item \textbf{Sudden failure detection bounds:} Abrupt step-function faults produce lower predictive sensitivity (F1 0.529) due to the absence of precursor trend signals in historical windows.
-\item \textbf{Root-cause inference is not causal proof:} Evidence scores aggregate XAI contributions across resource domains; this heuristic mapping reflects model focus rather than formal counterfactual causal mechanisms.
-\item \textbf{Post-healing telemetry is synthetic:} The verification verdict reflects model behaviour on simulated normal telemetry streams rather than physical platform recovery.
-\item \textbf{Prototype model training at initialisation:} The research prototype fits the model at server startup, which is appropriate for evaluation and reproducibility but requires dedicated model registries in production.
-\item \textbf{No real-world validation:} Benchmarking against production infrastructure traces (e.g., Alibaba Cluster, Google Cluster, or Microsoft Azure trace datasets) represents essential future work.
-\end{enumerate}
+The platform exhibits several operational bounds and threats to validity: (1)~\textbf{Synthetic telemetry:} All data is generated by parameterised scenario profiles rather than production systems; generalisation to physical multi-tenant cloud infrastructure remains unvalidated. (2)~\textbf{Simulated recovery:} Remediation actions are logged string selections dispatched by rule-based logic, not executable hypervisor or cloud API calls, so no physical resource reallocation occurs. (3)~\textbf{Sudden failure detection bounds:} Abrupt step-function faults yield lower predictive sensitivity (F1 0.529) due to absent precursor trend signals in historical windows. (4)~\textbf{Root-cause inference is not causal proof:} Evidence scores aggregate XAI contributions across resource domains; this heuristic mapping reflects model focus rather than counterfactual causal mechanisms. (5)~\textbf{Post-healing telemetry is synthetic:} The verification verdict reflects model behaviour on simulated normal telemetry streams rather than physical recovery. (6)~\textbf{Prototype model training at initialisation:} The research prototype fits the model at server startup, which is suitable for evaluation but requires dedicated model registries in production. (7)~\textbf{No real-world validation:} Benchmarking against production infrastructure traces (e.g., Alibaba, Google, or Microsoft Azure trace datasets) represents essential future work.
 
 \section{Conclusion and Future Work}
 
 This paper presented an integrated, explainable AI-driven cloud management prototype that connects telemetry ingestion, Isolation Forest anomaly detection, temporal feature extraction, comparative predictive modeling, deterministic coefficient attribution, failure-category inference, autonomous decision logic, simulated recovery, and post-recovery model-based verification within a single evaluated system.
 
-The key experimental findings are:
-\begin{itemize}
-\item Isolation Forest achieves an F1-score of 0.760 on snapshot anomaly detection.
-\item Temporal Logistic Regression achieves mean F1-score 0.692 and ROC-AUC 0.813 across five seeds, substantially outperforming threshold-based monitoring (F1 0.156).
-\item The model provides early-warning predictions with a mean lead time of 18.06 timesteps before labelled failure onset.
-\item Deterministic coefficient attribution identifies variability and slope features as the strongest predictive drivers for gradual failure scenarios.
-\item The post-recovery verification mechanism conservatively returns an INCONCLUSIVE verdict when recovery is partial, thereby preventing false claims of successful remediation.
-\end{itemize}
+The key experimental findings are: (1)~Isolation Forest achieves an F1-score of 0.760 on snapshot anomaly detection; (2)~temporal Logistic Regression achieves mean F1-score 0.692 and ROC-AUC 0.813 across five seeds, substantially outperforming threshold-based monitoring (F1 0.156); (3)~the model provides early-warning predictions with a mean lead time of 18.06 timesteps before labelled failure onset; (4)~deterministic coefficient attribution identifies variability and slope features as the strongest predictive drivers for gradual failure scenarios; and (5)~the post-recovery verification mechanism conservatively returns an INCONCLUSIVE verdict when recovery is partial, thereby preventing false claims of successful remediation.
 
-Future work will address the validation of these methods on real cloud infrastructure trace datasets, the replacement of simulated recovery with real orchestration API integration, the evaluation of multi-model ensemble attribution methods, and rigorous comparisons with deep learning temporal methods (e.g., LSTM and transformer networks) under identical experimental protocols.
+Future work will validate these methods on real cloud infrastructure trace datasets, replace simulated recovery with real orchestration APIs, evaluate multi-model ensemble attribution, and benchmark against deep learning temporal methods (e.g., LSTM and transformer networks) under identical experimental protocols.
 
-\newpage
 \section*{Acknowledgment}
-The author expresses sincere gratitude to project guide Mrs.~S.~Shirly, Assistant Professor, Department of Computer Science and Engineering, Karunya Institute of Technology and Science, for her invaluable supervision, guidance, and constructive feedback throughout this research. In compliance with IEEE author guidelines, the author acknowledges the use of AI tools for assistance with manuscript language refinement and formatting; all technical concepts, experimental analyses, and conclusions were independently conducted, verified, and approved by the author.
+The author expresses sincere gratitude to project guide Dr.~S.~Shirly, Assistant Professor, Department of Computer Science and Engineering, Karunya Institute of Technology and Science, for her invaluable supervision, guidance, and constructive feedback throughout this research. In compliance with IEEE guidelines, the author acknowledges AI tool assistance for language refinement and formatting; all technical concepts, analyses, and conclusions were independently conducted, verified, and approved by the author.
 
 \balance
 \interlinepenalty=500

@@ -5,11 +5,25 @@ import tarfile
 from pathlib import Path
 import pypdf
 
-def compile_latex(source_dir="01_PAPER_CURRENT", tex_name="main.tex", output_pdf="01_PAPER_CURRENT/main_compiled.pdf"):
-    source_path = Path(source_dir)
+def compile_latex(source_dir=None, tex_name="main.tex", output_pdf=None):
+    base_dir = Path(__file__).resolve().parent.parent
+    if source_dir is None:
+        source_path = base_dir / "01_PAPER_CURRENT"
+    else:
+        source_path = Path(source_dir)
+        if not source_path.is_absolute():
+            source_path = base_dir / source_path
+
+    if output_pdf is None:
+        out_path = source_path / "main_compiled.pdf"
+    else:
+        out_path = Path(output_pdf)
+        if not out_path.is_absolute():
+            out_path = base_dir / out_path
+
     print(f"Creating archive from {source_path} targeting {tex_name}...")
     
-    tar_name = "temp_paper_payload.tar.gz"
+    tar_name = str(base_dir / "temp_paper_payload.tar.gz")
     with tarfile.open(tar_name, "w:gz") as tar:
         for f in source_path.glob("**/*"):
             if f.is_file():
@@ -27,16 +41,16 @@ def compile_latex(source_dir="01_PAPER_CURRENT", tex_name="main.tex", output_pdf
         "curl.exe", "-s",
         "-F", f"file=@{tar_name}",
         f"https://latexonline.cc/data?target={tex_name}",
-        "-o", output_pdf
+        "-o", str(out_path)
     ]
     res = subprocess.run(cmd, capture_output=True)
     if os.path.exists(tar_name):
         os.remove(tar_name)
         
     try:
-        reader = pypdf.PdfReader(output_pdf)
+        reader = pypdf.PdfReader(str(out_path))
         num_pages = len(reader.pages)
-        print(f"COMPILATION SUCCESS! Output PDF: {output_pdf} ({num_pages} pages)")
+        print(f"COMPILATION SUCCESS! Output PDF: {out_path} ({num_pages} pages)")
         for i, page in enumerate(reader.pages):
             txt = page.extract_text()
             first = txt.splitlines()[0] if txt else "[EMPTY]"
@@ -44,9 +58,10 @@ def compile_latex(source_dir="01_PAPER_CURRENT", tex_name="main.tex", output_pdf
             print(f"  Page {i+1}: chars={len(txt)} | '{first[:40]}' ... '{last[:40]}'")
         return num_pages
     except Exception as e:
-        print("COMPILATION FAILED or returned non-PDF:")
-        with open(output_pdf, "rb") as f:
-            print(f.read().decode("utf-8", errors="ignore")[:1000])
+        print("COMPILATION FAILED or returned non-PDF:", e)
+        if os.path.exists(out_path):
+            with open(out_path, "rb") as f:
+                print(f.read().decode("utf-8", errors="ignore")[:1000])
         return None
 
 if __name__ == "__main__":

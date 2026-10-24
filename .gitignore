@@ -15,3 +15,14 @@ env/
 .idea/
 .DS_Store
 Thumbs.db
+.agents/
+
+# Logs and temporary build payloads
+*.log
+*.tar.gz
+temp_paper_payload.tar.gz
+recovery_log.txt
+
+# Local backups
+01_PAPER_CURRENT_BACKUP_*/
+01_PAPER_CURRENT/main_backup_*.tex
