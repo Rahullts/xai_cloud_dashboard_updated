@@ -5,8 +5,46 @@ An end-to-end, explainable autonomous cloud reliability platform that combines t
 ![Python](https://img.shields.io/badge/Python-3.10%2B-blue)
 ![Framework](https://img.shields.io/badge/Framework-Flask%20%7C%20scikit--learn%20%7C%20Gunicorn-orange)
 ![License](https://img.shields.io/badge/License-MIT-green)
-![Deployment](https://img.shields.io/badge/Deploy-Render%20Ready-brightgreen)
-![Status](https://img.shields.io/badge/Release-Production%20Cloud%20Ready-brightgreen)
+![Deployment Status](https://img.shields.io/badge/Render-Live%20%7C%20Online-brightgreen)
+![Build](https://img.shields.io/badge/Release-Verified-brightgreen)
+
+---
+
+## 🌐 Live Public Demo (Conference & Reviewer Verification)
+
+The interactive autonomous operations platform is deployed and publicly accessible via HTTPS on Render:
+
+* **🚀 Live Dashboard:** [https://xai-cloud-platform.onrender.com](https://xai-cloud-platform.onrender.com)
+* **🩺 Health-Check Endpoint:** [https://xai-cloud-platform.onrender.com/healthz](https://xai-cloud-platform.onrender.com/healthz)
+* **📂 GitHub Repository:** [https://github.com/Rahullts/xai_cloud_dashboard_updated](https://github.com/Rahullts/xai_cloud_dashboard_updated)
+
+> [!IMPORTANT]
+> **Scientific & Operational Disclaimer:**  
+> All telemetry is generated from controlled synthetic failure scenario benchmarks, and autonomous healing actions and post-recovery verifications are executed in simulation mode. This platform evaluates algorithmic decision-making, deterministic feature attribution, and closed-loop verification; it does not claim to execute destructive or physical remediation on production cloud infrastructure.
+
+> [!NOTE]
+> **Free Tier Cold-Start Notice:**  
+> On Render's free tier, the container instance automatically spins down after 15 minutes of inactivity. If the service is idle, the initial visit may take 30–50 seconds to spin up and warm the in-memory ML model. Subsequent requests respond in ~300–500 ms.
+
+---
+
+## 🔍 How to Verify the Live Demo (Step-by-Step)
+
+1. **Access the Live Platform:** Open [https://xai-cloud-platform.onrender.com](https://xai-cloud-platform.onrender.com). The UI displays a live, real-time dark-theme dashboard with the top badge indicating **"Simulation Lab · Synthetic Telemetry"**.
+2. **Verify Load Balancer & Health Status:** Navigate to [https://xai-cloud-platform.onrender.com/healthz](https://xai-cloud-platform.onrender.com/healthz). You will receive an immediate HTTP 200 JSON response confirming model readiness:
+   ```json
+   {"mode": "simulation", "service": "xai-cloud-platform", "status": "ok", "version": "1.0.0"}
+   ```
+3. **Buffer Warm-Up Inspection:** Upon initial connection, observe the 10-step sliding-window buffer counter increment from `1 / 10` to `10 / 10` as baseline telemetry streams in.
+4. **Interactive Simulation Scenarios (Simulation Lab):**
+   - **Normal Stable:** Baseline operating metrics. Risk score remains LOW / MEDIUM; healing engine reports `Skipped`.
+   - **CPU Spike:** Sudden compute surge drives predicted failure risk to `HIGH` / `CRITICAL` ($P > 0.60$). Triggers simulated CPU scaling (`RECOVERED`).
+   - **Memory Leak:** Linear memory saturation triggers autonomous memory reclaim (`RECOVERED`).
+   - **Disk Exhaustion:** Steady storage depletion triggers temporary data cleanup (`RECOVERED`).
+   - **Network Degradation:** Injects synthetic packet jitter and latency ($>200\text{ ms}$). Closed-loop verification conservatively returns **`INCONCLUSIVE`** (honest verification of partial mitigation without false recovery claims).
+   - **Combined Failure:** Multi-resource saturation returns **`NOT_RECOVERED`** (honest verification when a single action cannot resolve multi-fault anomalies).
+5. **Inspect Explainable AI (XAI) Attribution:** Scroll to the **Why Did the Model Decide This?** waterfall chart to inspect deterministic linear coefficients ($w_i \cdot \tilde{x}_i$) identifying influential trend and variability features.
+6. **Chronological Incident Timeline:** Review the audit log at the bottom to verify timestamped state transitions and before/after verification evidence.
 
 ---
 
@@ -53,39 +91,34 @@ Modern cloud infrastructure requires proactive, transparent resilience. Traditio
 
 ## 3. Cloud Deployment Guide (Public HTTPS Hosting on Render)
 
-The application is pre-configured for instant zero-configuration deployment on [Render](https://render.com/) (or Railway, Fly.io, Heroku) via GitHub integration.
+The application is pre-configured for instant zero-configuration deployment on [Render](https://render.com/) via GitHub integration.
 
 ### Method A: One-Click Render Blueprint (Recommended)
 
-1. Fork or push this repository to your GitHub account: `https://github.com/Rahullts/xai_cloud_dashboard_updated`.
-2. Log in to your [Render Dashboard](https://dashboard.render.com/).
-3. Click **New +** → **Blueprint**.
-4. Connect your GitHub repository: `xai_cloud_dashboard_updated`.
-5. Render will automatically detect [`render.yaml`](./render.yaml) and configure the build command, start command, health check, and environment variables.
-6. Click **Apply**. Render will build the environment and provide your live public HTTPS link (e.g., `https://xai-cloud-platform.onrender.com`).
+1. Connect this repository to your Render account: `https://github.com/Rahullts/xai_cloud_dashboard_updated`.
+2. In [Render Dashboard](https://dashboard.render.com/), select **New +** → **Blueprint**.
+3. Render automatically parses [`render.yaml`](./render.yaml) to configure the build command, start command, health check, and environment variables.
+4. Click **Apply**. Render builds and provisions the live HTTPS service at `https://xai-cloud-platform.onrender.com`.
 
 ---
 
 ### Method B: Manual Web Service Setup on Render
 
-If creating the web service manually without Blueprint:
-
-1. In Render Dashboard, click **New +** → **Web Service**.
-2. Select your repository: `xai_cloud_dashboard_updated` (branch: `feature/xai-final-year-upgrade` or `master`).
-3. Fill in the service configuration:
+1. Click **New +** → **Web Service** in Render.
+2. Select repository `Rahullts/xai_cloud_dashboard_updated` (branch: `master`).
+3. Set the configuration:
    - **Name**: `xai-cloud-platform`
-   - **Region**: Any (e.g., Oregon, USA or Frankfurt, EU)
    - **Runtime**: `Python 3`
    - **Build Command**: `pip install -r requirements.txt`
    - **Start Command**: `gunicorn dashboard:app --bind 0.0.0.0:$PORT --workers 1 --threads 4 --timeout 120`
    - **Instance Type**: `Free`
-4. Expand **Advanced** and configure:
+4. Expand **Advanced**:
    - **Health Check Path**: `/healthz`
    - **Auto-Deploy**: `Yes`
 5. Click **Create Web Service**.
 
 > [!NOTE]
-> **Single-Worker Concurrency (`--workers 1 --threads 4`)**: The simulated cloud scenario buffer maintains in-memory temporal state across dashboard poll cycles. Running a single worker with multiple threads ensures thread-safe, synchronized playback for demo reviewers while supporting high-concurrency requests.
+> **Single-Worker Concurrency (`--workers 1 --threads 4`)**: The simulated cloud scenario buffer maintains in-memory temporal state across dashboard poll cycles. Running a single worker with multiple threads ensures thread-safe, synchronized playback for demo reviewers while supporting concurrent client visits.
 
 ---
 
@@ -93,11 +126,11 @@ If creating the web service manually without Blueprint:
 
 | Variable | Default Value | Required | Purpose |
 | :--- | :---: | :---: | :--- |
-| `PORT` | `5000` | No (Injected by Cloud) | Listening port for web server. Render automatically sets this (e.g. 10000). |
+| `PORT` | `5000` | No (Injected by Cloud) | Listening port for web server. Render automatically injects this. |
 | `HOST` | `0.0.0.0` | No | Network interface binding. `0.0.0.0` allows external cloud routing. |
-| `DEBUG` | `False` | No | Enables Flask debug mode and detailed tracebacks. Keep `False` in production. |
+| `DEBUG` | `False` | No | Controls Flask debug mode and stack-trace exposure. Kept `False` in production. |
 | `PYTHON_VERSION`| `3.11.9` | No | Pinned Python runtime version for container builds. |
-| `MODEL_SAMPLES` | `200` | No | Sample size for initial prototype training runs. |
+| `MODEL_SAMPLES` | `200` | No | Sample size parameter for prototype model fitting. |
 
 ---
 
@@ -129,27 +162,7 @@ Open `http://localhost:5000` in your web browser.
 
 ---
 
-## 6. Reviewer Verification Checklist (Public Dashboard Audit)
-
-Once deployed, conference reviewers and project supervisors can verify all 10 platform capabilities:
-
-- [ ] **1. Public Availability**: Navigate to the Render HTTPS URL. Confirm HTTP 200 and page render.
-- [ ] **2. Health Check**: Visit `/healthz` to confirm load balancer response: `{"status": "ok", "service": "xai-cloud-platform", "mode": "simulation"}`.
-- [ ] **3. Normal Operation**: Select **Normal Stable** in Simulation Lab. Confirm telemetry stays within baseline, risk remains LOW/MEDIUM, and no recovery is triggered.
-- [ ] **4. Buffer Warm-Up**: Observe the 10-step temporal buffer counter (`k / 10`) until 45 rolling features activate.
-- [ ] **5. CPU Failure Detection**: Select **CPU Spike** or **CPU Gradual**. Verify predicted risk shifts to HIGH/CRITICAL before threshold breaches.
-- [ ] **6. XAI Linear Attribution**: Inspect the **XAI Reasoning** waterfall chart. Verify exact coefficient contributions with clear positive/negative directions.
-- [ ] **7. Root-Cause Category**: Confirm inferred root-cause reflects the dominant resource driver (e.g., `CPU Saturation` or `Memory Leak`).
-- [ ] **8. Simulated Remediation**: Observe the decision engine dispatching mapped action (e.g., `Scale CPU / restart affected workload`).
-- [ ] **9. Closed-Loop Verification**:
-  - CPU / Memory / Disk: Re-evaluates post-healing telemetry and confirms **RECOVERED**.
-  - Network Degradation: Conservatively outputs **INCONCLUSIVE** (honest scientific validation).
-  - Combined Failure: Correctly outputs **NOT_RECOVERED** for unresolvable concurrent multi-faults.
-- [ ] **10. Incident Timeline**: Review the chronological incident log at the bottom to verify timestamped state transitions.
-
----
-
-## 7. Verification & Automated Test Suites
+## 6. Verification & Automated Test Suites
 
 The repository contains automated unit, integration, and scenario audit test suites:
 
@@ -170,9 +183,11 @@ python test_temporal_features.py
 python test_api.py
 ```
 
+All 35+ test validations pass deterministically.
+
 ---
 
-## 8. Research Scope & Limitations
+## 7. Research Scope & Limitations
 
 1. **Controlled Telemetry**: Telemetry is generated from parameterized operational profiles (stable, bursty, drift, and degradation models) rather than live production cloud providers.
 2. **Simulation-Only Remediation**: Healing actions (service restarts, cache clears, scaling, disk compaction) are simulated and logged. No destructive actions are performed on host operating systems or cloud infrastructure.
@@ -182,9 +197,10 @@ python test_api.py
 
 ---
 
-## 9. License & Authors
+## 8. License & Authors
 
 - **Primary Author**: Rahul TS (`rahult23@karunya.edu.in`)
 - **Project Supervisor**: Dr. S. Shirly (`shirly@karunya.edu.in`)
 - **Institution**: Department of Computer Science and Engineering, School of Computer Science and Technology, Karunya Institute of Technology and Science, Coimbatore, India
 - **Repository**: [Rahullts/xai_cloud_dashboard_updated](https://github.com/Rahullts/xai_cloud_dashboard_updated)
+- **Live Deployment**: [https://xai-cloud-platform.onrender.com](https://xai-cloud-platform.onrender.com)
